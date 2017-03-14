@@ -1,0 +1,172 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "JAVA代码生成器";
+}
+<style type="text/css">
+    .eleHide {
+        display: none;
+    }
+
+    .divCondition {
+        margin-bottom: 10px;
+    }
+
+    .divContent {
+        box-shadow: 0 0 10px grey;
+        padding: 20px;
+    }
+</style>
+<div id="pageMSSQL" class="divPage">
+    <div class="divCondition">
+        <div>
+            <button id="btnConnect" class="jk-button mr15">连接</button>
+            <button id="btnGenerat" class="jk-button-disabled" disabled="disabled">生成</button>
+        </div>
+        <table style="margin-top: 10px">
+            <tr>
+                <td>连接字符串: </td>
+                <td>
+                    <input type="text" id="txtConnectionString" style="width: 586px" value="data source=124.251.46.179;database=payment_test;uid=payment_test_admin;pwd=Bd89sR3a;" />
+                </td>
+            </tr>
+            <tr class="eleHide">
+                <td>包: </td>
+                <td>
+                    <input type="text" id="txtPackage" style="width: 586px" value="com.Fang.xxx.{0}" />
+                </td>
+            </tr>
+            <tr class="eleHide">
+                <td>表和视图: </td>
+                <td>
+                    <select id="sltTables" class="w600"></select>
+                </td>
+            </tr>
+            <tr class="eleHide">
+                <td>类名: </td>
+                <td>
+                    <input type="text" id="txtClassName" class="" style="width: 586px" />
+                </td>
+            </tr>
+            <tr class="eleHide">
+                <td>类型: </td>
+                <td>
+                    <select id="sltDataType" class="w600 ">
+                        <option value="Entity">Entity</option>
+                        <option value="Dao">Dao</option>
+                        <option value="DaoAdd">Dao.Add</option>
+                        <option value="DaoUpdate">Dao.Update</option>
+                        <option value="DaoUpdateColumn">Dao.UpdateColumn</option>
+                        <option value="DaoGet">Dao.Get</option>
+                        <option value="DaoGetList">Dao.GetList</option>
+                        <option value="DaoGetPageList">Dao.GetPageList</option>
+                        <option value="DaoGetColumn">Dao.GetColumn</option>
+                        <option value="DaoGetCount">Dao.GetCount</option>
+                        <option value="DaoGetSum">Dao.GetSum</option>
+                        <option value="DaoGetAvg">Dao.GetAvg</option>
+                        <option value="DaoGetMax">Dao.GetMax</option>
+                        <option value="DaoGetMin">Dao.GetMin</option>
+                        <option value="DaoDelete">Dao.Delete</option>
+                        <option value="DaoExists">Dao.Exists</option>
+                        <option value="DaoOther">Dao.Other</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <pre id="divCode" class="divContent" style="display: none">
+    </pre>
+</div>
+<script type="text/javascript">
+    $(function () {
+        InitCodeTypeSlt();
+    });
+
+    function InitCodeTypeSlt() {
+        $.getJSON("/CodeMaker/GetCodeTypeSlt", function (data) {
+            $("#sltDataType").html('');
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                html += "<option value='" + data[i] + "'>" + data[i].replaceAll("Ref","") + "</option>";
+            }
+            $("#sltDataType").html(html);
+        });
+
+    }
+
+    $("#btnGenerat").bind("click", function () {
+        var connectionString = $("#txtConnectionString").val();
+        var table = $("#sltTables").val();
+        var pkg = $("#txtPackage").val();
+        var className = $("#txtClassName").val();
+        var type = $("#sltDataType").val();
+        $.getJSON("/CodeMaker/GeneratCode", {
+            ConnectionString: encodeURIComponent(connectionString),
+            Table: table,
+            Package: pkg,
+            Type: type,
+            ClassName: className,
+            Random: new Date().getTime()
+        }, function (result) {
+            if (result != null && result.Message != null) {
+                alert(result.Message);
+            }
+            else {
+                $("#divCode").fadeIn(200);
+                $("#divCode").text(result);
+            }
+        });
+    });
+
+    $("#divCode").hover(function () {
+        SelectText("divCode");
+    }, function () {
+        if ($("#divCode").createTextRange) {//IE浏览器
+            document.selection.empty();
+        } else if (window.getSelection) {//非IE浏览器
+            window.getSelection().removeAllRanges();
+        }
+
+    });
+
+    $("#sltTables").bind("change", function () {
+        $("#txtClassName").val($(this).find("option:selected").val());
+    });
+
+    $("#btnConnect").bind("click", function () {
+        var connectionString = $("#txtConnectionString").val();
+        if (connectionString.trim() == "") {
+            return;
+        }
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: "/CodeMaker/GetTables",
+            cache: false,
+            timeout: 60 * 60 * 1000,
+            dataType: "json",
+            data: {
+                ConnectionString: encodeURIComponent(connectionString),
+                Random: new Date()
+            },
+            success: function (result) {
+                if (result != null && result.Message != null) {
+                    alert(result.Message);
+                    $(".eleHide").hide();
+                }
+                else {
+                    $(".eleHide").fadeIn(200);
+                    $("#btnGenerat").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
+                    var tables = $("#sltTables");
+                    var html = "";
+                    if (result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            html = html + "<option value='" + result[i].Name + "'>" + result[i].Name + "</option>";
+                        }
+                        $("#txtClassName").val(result[0].Name);
+                    }
+                    tables.html(html);
+                }
+            }
+        });
+    });
+</script>

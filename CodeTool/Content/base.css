@@ -1,0 +1,217 @@
+﻿body {
+    margin: 0;
+    font-family: "Microsoft YaHei";
+    font-size: 14px;
+}
+
+select {
+    padding: 3px;
+}
+
+input[type=text] {
+    padding: 3px 5px;
+}
+
+.divTop {
+    border-bottom: 1px solid #eeeeee;
+    height: 65px;
+    position: fixed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    font-weight: 400;
+    top: 0px;
+    width: 100%;
+    background: #fff;
+}
+
+    .divTop h1 {
+        color: #757575;
+        font-size: 30px;
+        font-weight: 400;
+        margin: 12px 0;
+    }
+
+
+.divRenderBody{
+    width: 1000px;
+    margin:0 auto;
+    margin-top: 100px;
+}
+.divPage {
+    margin: 20px;
+    font-family: "Microsoft YaHei";
+}
+
+.divContent{
+    font-size:12px;
+}
+
+.dn {
+    display: none;
+}
+
+.rd5 {
+    border-radius: 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 5px; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 5px; /* Webkit浏览器的私有属性 */
+}
+
+.rd10 {
+    border-radius: 10px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 10px; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 10px; /* Webkit浏览器的私有属性 */
+}
+
+.rd15 {
+    border-radius: 15px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 15px; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 15px; /* Webkit浏览器的私有属性 */
+}
+
+.mr5 {
+    margin-right: 5px;
+}
+
+.mr10 {
+    margin-right: 10px;
+}
+
+.mr15 {
+    margin-right: 15px;
+}
+
+.mr20 {
+    margin-right: 20px;
+}
+
+.mt5 {
+    margin-top: 5px;
+}
+
+.mt10 {
+    margin-top: 10px;
+}
+
+.mt15 {
+    margin-top: 15px;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.w50 {
+    width: 50px;
+}
+
+.w100 {
+    width: 100px;
+}
+
+.w200 {
+    width: 200px;
+}
+
+.w300 {
+    width: 300px;
+}
+
+.w400 {
+    width: 400px;
+}
+
+.w500 {
+    width: 500px;
+}
+
+.w600 {
+    width: 600px;
+}
+
+.w700 {
+    width: 700px;
+}
+
+.w800 {
+    width: 800px;
+}
+
+.h20 {
+    height: 20px;
+}
+
+.h22 {
+    height: 22px;
+}
+
+.h25 {
+    height: 25px;
+}
+
+.jk-button {
+    transition: 0.2s;
+    cursor: pointer;
+    height: 35px;
+    width: 75px;
+    border: none;
+    background-color: #616161;
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+    outline: none;
+}
+
+.jk-button-disabled {
+    transition: 0.2s;
+    cursor: pointer;
+    height: 35px;
+    width: 75px;
+    border: 1px dashed #BDBDBD;
+    background-color: #fff;
+    color: #616161;
+    font-weight: 400;
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+    outline: none;
+}
+
+    .jk-button:hover {
+        background-color: #BDBDBD;
+    }
+
+.goTop {
+    width: 35px;
+    height: 35px;
+    bottom: 50px;
+    right: 50px;
+    position: fixed;
+    background-color: #dcdcdc;
+    padding: 8px;
+    cursor: pointer;
+}
+
+    .goTop:hover {
+        transition: 0.2s;
+        box-shadow: 0 0 15px grey;
+        background-color: #607D8B;
+    }
+
+.goTop_t {
+    font-size: 0;
+    line-height: 0;
+    border-width: 18px;
+    border-color: whitesmoke;
+    border-top-width: 0;
+    border-style: dashed;
+    border-bottom-style: solid;
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+
+.goTop_c {
+    margin: auto;
+    width: 15px;
+    height: 15px;
+    background-color: whitesmoke;
+}

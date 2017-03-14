@@ -1,0 +1,31 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/base.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/nprogress.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/kzx.js"></script>
+    <script src="~/Scripts/nprogress.js"></script>
+    <script src="~/Scripts/common.js"></script>
+</head>
+<body>
+        <div class="divTop">
+            @Html.Partial("~/Views/Main/Top.cshtml")
+        </div>
+        <div id="goTop" class="goTop rd10 dn">
+            <div class="goTop_t"></div>
+            <div class="goTop_c"></div>
+        </div>
+        <div class="divRenderBody">
+            @RenderBody()
+        </div>
+</body>
+</html>
