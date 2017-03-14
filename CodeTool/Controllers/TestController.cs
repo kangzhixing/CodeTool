@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using CodeTool.common;
 using SoufunLab.Framework.Data;
 using SoufunLab.Framework.Web;
 using SoufunLab.Framework.Web.Mvc;
 
 namespace CodeTool.Controllers
 {
-    public class TestController : Controller
+    public class TestController : BaseController
     {
         //
         // GET: /Default/
         private string connectionString = "data source=124.251.46.179;database=Pay_test;uid=Pay_test_admin;pwd=E792dF8e;";
 
+        [ViewPage]
+        [Description("Java代码生成器")]
         public ActionResult POS()
         {
             return View();
@@ -75,6 +76,8 @@ namespace CodeTool.Controllers
             }
         }
 
+        [ViewPage]
+        [Description("Java代码生成器")]
         public ActionResult FormSubmit()
         {
             return View();

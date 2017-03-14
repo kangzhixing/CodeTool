@@ -13,37 +13,54 @@ input[type=text] {
 }
 
 .divTop {
+    background: #fff;
+    width: 100%;
+    position: fixed;
     border-bottom: 1px solid #eeeeee;
     height: 65px;
-    position: fixed;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    font-weight: 400;
     top: 0px;
-    width: 100%;
-    background: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 400;
 }
 
-    .divTop h1 {
-        color: #757575;
-        font-size: 30px;
-        font-weight: 400;
-        margin: 12px 0;
-    }
-
-
-.divRenderBody{
+#divTopPage {
     width: 1000px;
-    margin:0 auto;
+    margin: auto;
+    margin: 10px auto;
+}
+
+#divIndex {
+    cursor: pointer;
+    color: #757575;
+    font-size: 30px;
+    font-weight: 400;
+    display: inline-block;
+}
+
+#txtTopSearch {
+    background-color: #eeeeee;
+    border: none;
+    height: 25px;
+    position: relative;
+    top: -5px;
+    left: 20px;
+    outline: none;
+}
+
+
+.divRenderBody {
+    width: 1000px;
+    margin: 0 auto;
     margin-top: 100px;
 }
+
 .divPage {
     margin: 20px;
     font-family: "Microsoft YaHei";
 }
 
-.divContent{
-    font-size:12px;
+.divContent {
+    font-size: 12px;
 }
 
 .dn {
@@ -176,9 +193,9 @@ input[type=text] {
     outline: none;
 }
 
-    .jk-button:hover {
-        background-color: #BDBDBD;
-    }
+.jk-button:hover {
+    background-color: #BDBDBD;
+}
 
 .goTop {
     width: 35px;

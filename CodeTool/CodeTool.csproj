@@ -134,17 +134,22 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="common\AuthorizeFilterAttribute.cs" />
+    <Compile Include="common\CommonMethod.cs" />
     <Compile Include="common\ReflectMethod.cs" />
-    <Compile Include="Controllers\DefaultController.cs" />
+    <Compile Include="common\ViewPageAttribute.cs" />
+    <Compile Include="Controllers\IndexController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\CodeMakerController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CoderMaker\CodeMakerGetTablesIn.cs" />
     <Compile Include="Models\CoderMaker\CodeMakerGeneratCodeIn.cs" />
     <Compile Include="Models\CoderMaker\CodeMakerGeneratCodeOut.cs" />
+    <Compile Include="Models\Index\IndexGetByName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

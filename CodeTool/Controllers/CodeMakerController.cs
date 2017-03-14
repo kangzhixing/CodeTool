@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -18,11 +19,13 @@ using Mo = CodeTool.Models;
 
 namespace CodeTool.Controllers
 {
-    public class CodeMakerController : Controller
+    public class CodeMakerController : BaseController
     {
         //
         // GET: /Default/
 
+        [ViewPage]
+        [Description("Java代码生成器")]
         public ActionResult MSSQL()
         {
             return View();
@@ -30,8 +33,8 @@ namespace CodeTool.Controllers
 
         public ActionResult GetCodeTypeSlt()
         {
-            Type type = Type.GetType(SlConfig.GetValue<string>("ReflectClass"));
-
+            var type = Type.GetType(SlConfig.GetValue<string>("ReflectClass"));
+            
             return new SlJsonResult()
             {
                 Content = JlJson.ToJson(type.GetMethods().Where(m => m.Name.StartsWith("Ref")).Select(m => m.Name).ToList())
@@ -40,7 +43,7 @@ namespace CodeTool.Controllers
 
         public ActionResult GeneratCode()
         {
-            var inModel = new Mo.CoderMaker.CodeMakerGeneratCodeIn();
+            var inModel = new CodeMakerGeneratCodeIn();
             UpdateModel(inModel);
             try
             {
@@ -93,7 +96,7 @@ namespace CodeTool.Controllers
                 };
 
                 #region 通过反射调用方法
-                Type type = Type.GetType(SlConfig.GetValue<string>("ReflectClass"));
+                var type = Type.GetType(SlConfig.GetValue<string>("ReflectClass"));
                 //声明创建当前类实例
                 var model = Activator.CreateInstance(type);
                 var method = type.GetMethod(inModel.Type);
