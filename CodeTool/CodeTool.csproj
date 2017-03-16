@@ -138,7 +138,6 @@
     <Compile Include="common\CommonMethod.cs" />
     <Compile Include="common\ReflectMethod.cs" />
     <Compile Include="common\ViewPageAttribute.cs" />
-    <Compile Include="Controllers\IndexController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\CodeMakerController.cs" />
     <Compile Include="Controllers\TestController.cs" />
@@ -149,7 +148,9 @@
     <Compile Include="Models\CoderMaker\CodeMakerGetTablesIn.cs" />
     <Compile Include="Models\CoderMaker\CodeMakerGeneratCodeIn.cs" />
     <Compile Include="Models\CoderMaker\CodeMakerGeneratCodeOut.cs" />
-    <Compile Include="Models\Index\IndexGetByName.cs" />
+    <Compile Include="Models\Index\IndexSearchPagesIn.cs" />
+    <Compile Include="Models\Index\IndexSearchPagesOut.cs" />
+    <Compile Include="Models\Index\IndexSearchByNameIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -240,15 +241,16 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Default\Index.cshtml" />
+    <Content Include="Views\Main\Index.cshtml" />
     <Content Include="Views\Shared\MasterPage.cshtml" />
-    <Content Include="Views\Main\Top.cshtml" />
+    <Content Include="Views\Shared\Top.cshtml" />
     <Content Include="Views\Main\Main.cshtml" />
-    <Content Include="Views\CodeMaker\MSSQL.cshtml" />
+    <Content Include="Views\CodeMaker\JavaCode.cshtml" />
     <Content Include="Views\Test\POS.cshtml" />
     <Content Include="Views\Test\FormSubmit.cshtml" />
+    <Content Include="Views\Main\SearchPage.cshtml" />
+    <Content Include="Views\Main\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

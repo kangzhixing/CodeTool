@@ -1,8 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Mvc;
+using CodeTool.common;
+using JasonLib;
+using WebGrease.Css.Extensions;
+using CodeTool.Models.Index;
+using JasonLib.Web;
+using JasonLib.Web.Mvc;
+using SoufunLab.Framework.Web.Mvc;
 
 namespace CodeTool.Controllers
 {
@@ -11,10 +21,83 @@ namespace CodeTool.Controllers
         //
         // GET: /Default/
 
-        public ActionResult Main()
+        [ViewPage]
+        [Description("首页")]
+        public ActionResult Index()
         {
             return View();
         }
+
+        public ActionResult Error()
+        {
+            return View();
+        }
+
+        public ActionResult SearchByName()
+        {
+            var inModel = new IndexSearchByNameIn();
+            UpdateModel(inModel);
+            var keyword = inModel.PageName.ToLower();
+
+            var cache = JlHttpCache.Current;
+            var pages = cache.Get<Dictionary<string, MethodInfo>>("AllPages");
+
+            if (pages == null)
+            {
+                cache.Set("AllPages", CommonMethod.GetAllPageMethod());
+                pages = cache.Get<Dictionary<string, MethodInfo>>("AllPages");
+            }
+            if (pages.ContainsKey(keyword))
+            {
+                return new JlJsonResult()
+                {
+                    Content = JlJson.ToJson(CommonMethod.GetUrlByControllerMethod(pages[keyword]))
+                };
+            }
+            if (pages.Any(m => m.Key.Contains(keyword)))
+            {
+
+                return new JlJsonResult()
+                {
+                    Content = JlJson.ToJson("/Main/SearchPagesByKeyword?keyword=" + HttpUtility.HtmlEncode(keyword))
+                };
+            }
+
+            return new JlJsonResult()
+            {
+                Content = JlJson.ToJson(new
+                {
+                    Message = "empty"
+                })
+            };
+
+        }
+
+        public ActionResult SearchPagesByKeyword(string keyword)
+        {
+            var outModel = new IndexSearchPagesOut();
+
+            try
+            {
+                var cache = JlHttpCache.Current;
+                var allPages = cache.Get<Dictionary<string, MethodInfo>>("AllPages");
+
+
+                var result = allPages.Where(m => m.Key.Contains(keyword)).ToDictionary(m => m.Key, m => m.Value);
+
+                if (result.Count > 0)
+                {
+                    outModel.MethodList = result.Values.ToList();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToErrorPage();
+            }
+            return View("/Views/Main/SearchPage.cshtml", outModel);
+        }
+
 
     }
 }

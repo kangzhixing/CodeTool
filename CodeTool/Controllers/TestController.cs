@@ -16,7 +16,7 @@ namespace CodeTool.Controllers
         private string connectionString = "data source=124.251.46.179;database=Pay_test;uid=Pay_test_admin;pwd=E792dF8e;";
 
         [ViewPage]
-        [Description("Java代码生成器")]
+        [Description("测试 - 订单状态查询")]
         public ActionResult POS()
         {
             return View();
@@ -77,7 +77,7 @@ namespace CodeTool.Controllers
         }
 
         [ViewPage]
-        [Description("Java代码生成器")]
+        [Description("测试 - 表单提交")]
         public ActionResult FormSubmit()
         {
             return View();

@@ -8,6 +8,10 @@ namespace CodeTool.Controllers
 {
     public class BaseController : Controller
     {
+        public ActionResult RedirectToErrorPage()
+        {
+            return RedirectToAction("Error", "Main");
+        }
 
     }
 }

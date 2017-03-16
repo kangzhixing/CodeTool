@@ -1,0 +1,24 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "Main";
+}
+
+<div class="divPage">
+    <div id="div404">
+        <label>404</label>
+        <p><span id="pTimeOut"></span>秒后返回主页...</p>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var timeOut = 5;
+        $("#pTimeOut").text(timeOut);
+        var inter = setInterval(function () {
+            $("#pTimeOut").text(--timeOut);
+            if (timeOut == 0) {
+                clearInterval(inter);
+                location.href = "/";
+            }
+        }, 1000);
+    });
+</script>

@@ -1,0 +1,23 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "SearchPages";
+}
+@using CodeTool.common
+@model  CodeTool.Models.Index.IndexSearchPagesOut
+<div class="divPage">
+    @if (Model.MethodList == null)
+    {
+        <script type="text/javascript">
+            $(function () {
+                history.go(-1);
+            });
+        </script>
+    }
+    else
+    {
+        foreach (var method in Model.MethodList)
+        {
+        <div class="divSearchResult rd10" onclick="location.href = '@CommonMethod.GetUrlByControllerMethod(method)';">@CommonMethod.GetMethodDescription(method)</div>
+        }
+    }
+</div>

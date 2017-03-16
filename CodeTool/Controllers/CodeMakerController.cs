@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using CodeTool.common;
 using CodeTool.Models.CoderMaker;
 using JasonLib;
+using JasonLib.Web;
 using SoufunLab.Framework;
 using SoufunLab.Framework.Configuration;
 using SoufunLab.Framework.Data;
@@ -26,7 +27,7 @@ namespace CodeTool.Controllers
 
         [ViewPage]
         [Description("Java代码生成器")]
-        public ActionResult MSSQL()
+        public ActionResult JavaCode()
         {
             return View();
         }

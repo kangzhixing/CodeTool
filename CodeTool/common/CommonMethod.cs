@@ -4,23 +4,26 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JasonLib;
 using WebGrease.Css.Extensions;
 
 namespace CodeTool.common
 {
     public class CommonMethod
     {
-        public static List<MethodInfo> GetAllPageClass()
+        public static Dictionary<string, MethodInfo> GetAllPageMethod()
         {
-            var parentType = Type.GetType("CodeTool.Controllers.BaseController");
+            var parentType = Type.GetType(JlConfig.GetValue<string>("BaseController"));
             var controllers = Assembly.GetAssembly(parentType).GetTypes().Where(t => t.BaseType.Name == "BaseController").ToArray();
 
-            var pageClass = new List<MethodInfo>();
+            var pageClass = new Dictionary<string, MethodInfo>();
             controllers.ForEach(c =>
             {
-                pageClass.AddRange(c.GetMethods().Where(t =>
-                   t.GetCustomAttributes(typeof(DescriptionAttribute), true).Length > 0
-                ));
+                c.GetMethods().Where(t =>
+                    t.GetCustomAttributes(typeof(ViewPageAttribute), true).Length > 0).ForEach(m =>
+                    {
+                        pageClass.Add(GetMethodDescription(m).ToLower(), m);
+                    });
             });
 
             return pageClass;
@@ -38,6 +41,19 @@ namespace CodeTool.common
             }
 
             return result.ToString().Substring(0, result.Length - 10) + "/" + method.Name;
+        }
+
+        public static string GetMethodDescription(MethodInfo method)
+        {
+            var descriptionAttributes = method.GetCustomAttributes(typeof(DescriptionAttribute), true);
+            if (descriptionAttributes.Length > 0)
+            {
+                return ((DescriptionAttribute)descriptionAttributes.First()).Description;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 }
