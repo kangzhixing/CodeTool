@@ -9,6 +9,16 @@
     <title>Welcome</title>
 </head>
 <body>
+    <form method="post" id="Employee_Login" action="http://pay.fang.com/yeepay/gateway.aspx">
+        <input type="hidden" name="product" value="" />
+        <input type="hidden" name="p" value="" />
+    </form>
+    <form method="post" id="closeorder" action="http://pay.fang.com/GateWay.aspx">
+        <input type="hidden" name="Key" value="pacb0wgrkaw6aklwn4ttpemwz35yifj2jmy4nadh3d23gjm3uef1a0bkxpl5zqjez3xwvqin1mzmlrqprbedar1sknh7yhqm3yemuyid41axay8f84nxmfeicflhjkx2" />
+        <input type="hidden" name="Product" value="9" />
+        <input type="hidden" name="OrderId" value="" />
+        <input type="hidden" name="ServiceName" value="closeorder" />
+    </form>
     <form method="post" id="query_app_version_info" action="http://pay.fang.com/GateAppPage/query_app_version_info.aspx">
         <input type="hidden" name="sn" value="DEL172882828" />
         <input type="hidden" name="time" value="2017-03-09 17:00:00" />
@@ -48,9 +58,16 @@
     </form>
     <script type="text/javascript">
         $(function () {
-            $("#query_app_version_info").submit();
+            Employee_LoginSubmit();
             //ajaxPostDataEmtpy();
         });
+
+        function Employee_LoginSubmit() {
+            var p = '<?xml+version="1.0"+encoding="UTF-8"?><COD-MS><SessionHead><Version>V1.0</Version><ServiceCode>COD201</ServiceCode><TransactionID>SOUFANCOD201201703174536866447</TransactionID><SrcSysID>yeepay</SrcSysID><DstSysID>SOUFAN</DstSysID><ReqTime>20170317082209</ReqTime><ExtendAtt></ExtendAtt><HMAC>b0d7cfd16395d818f775fd4dcec33466</HMAC></SessionHead><SessionBody><Employee_ID>12345</Employee_ID><Password>827ccb0eea8a706c4c34a16891f84e7b</Password><PosSn>H7NL00673780</PosSn><CustomerNo>10012075953</CustomerNo></SessionBody></COD-MS>;<?xml version="1.0" encoding="UTF-8"?><COD-MS><SessionHead><Version>V1.0</Version><ServiceCode>COD201</ServiceCode><TransactionID>SOUFANCOD201201703174536866447</TransactionID><SrcSysID>yeepay</SrcSysID><DstSysID>SOUFAN</DstSysID><ReqTime>20170317082209</ReqTime><ExtendAtt></ExtendAtt><HMAC>b0d7cfd16395d818f775fd4dcec33466</HMAC></SessionHead><SessionBody><Employee_ID>12345</Employee_ID><Password>827ccb0eea8a706c4c34a16891f84e7b</Password><PosSn>H7NL00673780</PosSn><CustomerNo>10012075953</CustomerNo></SessionBody></COD-MS>';
+            $("#Employee_Login input[name=p]").val(escape(p));
+            $("#Employee_Login").submit();
+
+        }
 
         function ajaxPost() {
             $.ajax({

@@ -190,7 +190,7 @@
         </ul>
     </div>
 </header>
-<script>
+<script type="text/javascript">
     var Clock = (function () {
 
         // private variables
@@ -328,7 +328,7 @@
             ctx.fillStyle = "rgb(255, 255, 255)";
             ctx.textBaseline = "middle";
             ctx.font = textSize + "px 'Avenir', 'Helvetica Neue', 'Arial', 'sans-serif'";
-            ctx.fillText(text, (width - ctx.measureText(text).width) * 0.5, height * 0.5);
+            ctx.fillText(text, (width - ctx.measureText(text).width) * 0.5, height * 0.4); // 修改位置
 
             // copy pixels
             var imgData = ctx.getImageData(0, 0, width, height);
@@ -460,8 +460,8 @@
 
             // iterate through colorstops
             for (var position in gradientStops) {
-                var color = gradientStops[position];
-                //var color = "#fff"; //修改背景颜色
+                //var color = gradientStops[position];
+                var color = "#fff"; //修改背景颜色
                 gradient.addColorStop(position, color);
             }
         };

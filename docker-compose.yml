@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  codetool:
+    image: codetool
+    build:
+      context: .\CodeTool
+      dockerfile: Dockerfile

@@ -1,0 +1,55 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "MD5编码";
+}
+<style type="text/css">
+    .eleHide {
+        display: none;
+    }
+
+    .divCondition {
+        margin-bottom: 10px;
+    }
+
+    .divContent {
+        box-shadow: 0 0 10px grey;
+        padding: 20px;
+    }
+</style>
+<div class="divPage">
+    <div class="divCondition">
+        <table style="margin-top: 10px">
+            <tr>
+                <td>原字符串: </td>
+                <td>
+                    <input type="text" id="txtOriStr" style="width: 586px" placeholder="" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <pre id="divResult" class="divContent" style="display: none">
+    </pre>
+</div>
+<script type="text/javascript">
+    $("#txtOriStr").bind("keyup", function () {
+        var str = $("#txtOriStr").val();
+        if (str.trim() != '') {
+            $("#divResult").fadeIn(200);
+            $("#divResult").text(hex_md5(str));
+        } else {
+            $("#divResult").fadeOut(200);
+        }
+    });
+
+    $("#divResult").hover(function () {
+        SelectText("divResult");
+    }, function () {
+        if ($("#divResult").createTextRange) {//IE浏览器
+            document.selection.empty();
+        } else if (window.getSelection) {//非IE浏览器
+            window.getSelection().removeAllRanges();
+        }
+
+    });
+
+</script>

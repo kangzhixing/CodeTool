@@ -138,6 +138,7 @@
     <Compile Include="common\CommonMethod.cs" />
     <Compile Include="common\ReflectMethod.cs" />
     <Compile Include="common\ViewPageAttribute.cs" />
+    <Compile Include="Controllers\ToolController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\CodeMakerController.cs" />
     <Compile Include="Controllers\TestController.cs" />
@@ -213,7 +214,12 @@
     <Content Include="Content\base.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <None Include="Dockerfile" />
+    <None Include=".dockerignore">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Scripts\md5.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -251,6 +257,7 @@
     <Content Include="Views\Test\FormSubmit.cshtml" />
     <Content Include="Views\Main\SearchPage.cshtml" />
     <Content Include="Views\Main\Error.cshtml" />
+    <Content Include="Views\Tool\Md5.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
