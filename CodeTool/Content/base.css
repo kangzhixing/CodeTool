@@ -37,7 +37,7 @@ input[type=text] {
 }
 
 #divTopSearch {
-    display: inline-block;
+    display: block;
     float: right;
     margin-top: 6px;
 }
@@ -98,10 +98,34 @@ input[type=text] {
     display: none;
 }
 
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.cp{
+    cursor:pointer;
+}
+
 .rd5 {
     border-radius: 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
     -moz-border-radius: 5px; /* Mozilla浏览器的私有属性 */
     -webkit-border-radius: 5px; /* Webkit浏览器的私有属性 */
+}
+
+.rd5l {
+    border-radius: 5px 0 0 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 5px 0 0 5px; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 5px 0 0 5px; /* Webkit浏览器的私有属性 */
+}
+
+.rd5r {
+    border-radius: 0 5px 5px 0; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 0 5px 5px 0; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 0 5px 5px 0; /* Webkit浏览器的私有属性 */
 }
 
 .rd10 {
@@ -132,6 +156,26 @@ input[type=text] {
     margin-right: 20px;
 }
 
+.mr50 {
+    margin-right: 50px;
+}
+
+.mr60 {
+    margin-right: 60px;
+}
+
+.mr70 {
+    margin-right: 70px;
+}
+
+.mr80 {
+    margin-right: 80px;
+}
+
+.mr100 {
+    margin-right: 100px;
+}
+
 .mt5 {
     margin-top: 5px;
 }
@@ -146,6 +190,26 @@ input[type=text] {
 
 .mt20 {
     margin-top: 20px;
+}
+
+.mt50 {
+    margin-top: 50px;
+}
+
+.w20 {
+    width: 20px;
+}
+
+.w25 {
+    width: 25px;
+}
+
+.w30 {
+    width: 30px;
+}
+
+.w40 {
+    width: 40px;
 }
 
 .w50 {

@@ -117,15 +117,8 @@
         });
     });
 
-    $("#divCode").hover(function () {
+    $("#divCode").bind("mouseover",function () {
         SelectText("divCode");
-    }, function () {
-        if ($("#divCode").createTextRange) {//IE浏览器
-            document.selection.empty();
-        } else if (window.getSelection) {//非IE浏览器
-            window.getSelection().removeAllRanges();
-        }
-
     });
 
     $("#sltTables").bind("change", function () {

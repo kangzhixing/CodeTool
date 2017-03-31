@@ -9,6 +9,17 @@
     <title>Welcome</title>
 </head>
 <body>
+    <form method="post" id="refund_by_user" action="http://pay.fang.com/GateWayPage/refund_by_user.aspx">
+        <input type="hidden" name="MallPayId" value="7132" />
+        <input type="hidden" name="RefundAmount" value="0.01" />
+        <input type="hidden" name="RefundPayType" value="15" />
+        <input type="hidden" name="RefundBatchId" value="10" />
+        <input type="hidden" name="Key" value="pacb0wgrkaw6aklwn4ttpemwz35yifj2jmy4nadh3d23gjm3uef1a0bkxpl5zqjez3xwvqin1mzmlrqprbedar1sknh7yhqm3yemuyid41axay8f84nxmfeicflhjkx2" />
+        <input type="hidden" name="SendToBank" value="false" />
+        <input type="hidden" name="token" value="20170320154600" />
+        <input type="hidden" name="Product" value="9" />
+        <input type="hidden" name="RefundReturnUrl" value="http://www.soufun.com/refundreturn.aspx?id=1&SendToBank=true" />
+    </form>
     <form method="post" id="Employee_Login" action="http://pay.fang.com/yeepay/gateway.aspx">
         <input type="hidden" name="product" value="" />
         <input type="hidden" name="p" value="" />
@@ -58,8 +69,8 @@
     </form>
     <script type="text/javascript">
         $(function () {
-            Employee_LoginSubmit();
-            //ajaxPostDataEmtpy();
+            //Employee_LoginSubmit();
+            $("#refund_by_user").submit();;
         });
 
         function Employee_LoginSubmit() {
@@ -74,7 +85,7 @@
                 async: true,
                 type: "POST",
                 url:
-                    "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx?sign=Iosl7%2BcnSSqgT%2Foqf%2BGCSOKt8iens5ysSSen8ANU3jfMDjyhkwINa0ONM5w4LtfudKWxkGNX55sYZa0lHdpbcB0wo03a7eopoaYrGxj7ntdX9pcSRg2yLsi6fhGhJMX%2BklPCX4xIJZZrvkgHCv%2Fad6WaPFa53JcK8M4Nf2rfADI%3D",
+                "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx?sign=Iosl7%2BcnSSqgT%2Foqf%2BGCSOKt8iens5ysSSen8ANU3jfMDjyhkwINa0ONM5w4LtfudKWxkGNX55sYZa0lHdpbcB0wo03a7eopoaYrGxj7ntdX9pcSRg2yLsi6fhGhJMX%2BklPCX4xIJZZrvkgHCv%2Fad6WaPFa53JcK8M4Nf2rfADI%3D",
                 data: {
                     "mch_id": "822290054620192",
                     "device_info": "93043377",
@@ -106,7 +117,7 @@
                 async: true,
                 type: "POST",
                 url:
-                    "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx",
+                "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx",
                 data: {
                 },
                 success: function (result) {
@@ -120,12 +131,12 @@
                 async: true,
                 type: "POST",
                 url:
-                    "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx",
+                "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx",
                 data: {
                     "data":
                     "{\"mch_id\": \"822290054620192\",\"device_info\": \"93043377\",\"result_code\": \"FAIL\",\"trade_type\": \"012401\",\"total_fee\": \"000000000000001\",\"transaction_id\": \"17030720083846\",\"out_trade_no\": \"9170307000016671\"," +
-    "\"time_end\": \"20170307102647\",\"pay_type\": \"92\",\"card_no\": \"130010********7974\",\"pay_amt\": \"000000000000001\",\"batchbillno\": \"000001\",\"systraceno\": \"000038\",\"orderid_scan\": \"\",\"bank_type\": \"\"," +
-    "\"refernumber\": \"030720083846\",\"coupon_fee\": \"\",\"openid\": \"\"}",
+                    "\"time_end\": \"20170307102647\",\"pay_type\": \"92\",\"card_no\": \"130010********7974\",\"pay_amt\": \"000000000000001\",\"batchbillno\": \"000001\",\"systraceno\": \"000038\",\"orderid_scan\": \"\",\"bank_type\": \"\"," +
+                    "\"refernumber\": \"030720083846\",\"coupon_fee\": \"\",\"openid\": \"\"}",
                     "sign": encodeURIComponent("Iosl7%2BcnSSqgT%2Foqf%2BGCSOKt8iens5ysSSen8ANU3jfMDjyhkwINa0ONM5w4LtfudKWxkGNX55sYZa0lHdpbcB0wo03a7eopoaYrGxj7ntdX9pcSRg2yLsi6fhGhJMX%2BklPCX4xIJZZrvkgHCv%2Fad6WaPFa53JcK8M4Nf2rfADI%3D")
                 },
                 success: function (result) {

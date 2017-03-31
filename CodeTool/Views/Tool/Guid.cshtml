@@ -1,0 +1,87 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "Guid字符串";
+}
+
+<style type="text/css">
+    .divCondition {
+        margin-bottom: 10px;
+    }
+
+    .divContent {
+        box-shadow: 0 0 10px grey;
+        padding: 20px;
+    }
+
+    .cbx {
+        width: 20px;
+        height: 20px;
+        position: relative;
+        top: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+        text-align: center;
+        background-image: url(images/checkbox_01.gif);
+        background-repeat: no-repeat;
+        background-position: 0 0;
+    }
+</style>
+<div class="divPage">
+    <div class="divCondition">
+        <div>
+            <button id="btnGenerat" class="jk-button">生成</button>
+        </div>
+        <p class="mt20">
+            <span class="mr20">
+                数量: <input type="text" id="txtCnt" class="w25" value="1" maxlength="3" />
+            </span>
+            <span class="mr20"><label class="cp">是否包含"-": <input type="checkbox" id="cboHyphen" class="cbx" /></label></span>
+            <span><label class="cp">大写: <input type="checkbox" id="cboCapitals" class="cbx" /></label></span>
+        </p>
+    </div>
+    <pre id="divResult" class="divContent" style="display: none">
+    </pre>
+</div>
+<script type="text/javascript">
+    $("#btnGenerat").bind("click", function () {
+        var count = $("#txtCnt").val();
+        if (count.trim() == "" || !IsNumber(count)) {
+            $("#txtCnt").focus();
+            return;
+        } else {
+            $("#divResult").fadeIn(200);
+            var isHyphen = $("#cboHyphen").is(":checked");
+            var isCapitals = $("#cboCapitals").is(":checked");
+
+            var html = "";
+            for (var i = 0; i < parseInt(count); i++) {
+                var guid = newGuid();
+                var result = isHyphen ? guid : guid.replaceAll("-", "");
+                html += (isCapitals ? result.toUpperCase() : result.toLowerCase()) + "\n";
+            }
+            $("#divResult").html(html);
+        }
+    });
+
+
+    $("#txtCnt").keypress(function (e) {
+        if (!IsNumber(e.key)) {
+            return false;
+        }
+    });
+
+    $("#divResult").bind("mouseover", function () {
+        SelectText("divResult");
+    });
+    //).hover(function () {
+    //    SelectText($(this).attr("id"));
+    //}, function () {
+    //    if ($("#divResult").createTextRange) {//IE浏览器
+    //        document.selection.empty();
+    //    } else if (window.getSelection) {//非IE浏览器
+    //        window.getSelection().removeAllRanges();
+    //    }
+
+    //});
+
+</script>

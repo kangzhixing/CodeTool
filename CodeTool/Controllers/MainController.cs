@@ -21,8 +21,6 @@ namespace CodeTool.Controllers
         //
         // GET: /Default/
 
-        [ViewPage]
-        [Description("首页")]
         public ActionResult Index()
         {
             return View();
@@ -40,23 +38,30 @@ namespace CodeTool.Controllers
             var keyword = inModel.PageName.ToLower();
 
             var cache = JlHttpCache.Current;
-            var pages = cache.Get<Dictionary<string, MethodInfo>>("AllPages");
+            var pages = cache.Get<Dictionary<string, MethodInfo>>("pages");
 
             if (pages == null)
             {
-                cache.Set("AllPages", CommonMethod.GetAllPageMethod());
-                pages = cache.Get<Dictionary<string, MethodInfo>>("AllPages");
+                pages = CommonMethod.GetAllPageMethod();
+                cache.Set("pages", pages);
             }
-            if (pages.ContainsKey(keyword))
+
+            if (keyword == "kzx")
             {
                 return new JlJsonResult()
                 {
-                    Content = JlJson.ToJson(CommonMethod.GetUrlByControllerMethod(pages[keyword]))
+                    Content = JlJson.ToJson("/Main/SearchPagesByKeyword?isall=1")
                 };
             }
-            if (pages.Any(m => m.Key.Contains(keyword)))
+            if (pages.Count(p => p.Key.Contains(keyword)) == 1)
             {
-
+                return new JlJsonResult()
+                {
+                    Content = JlJson.ToJson(CommonMethod.GetUrlByControllerMethod(pages.Single(p => p.Key.Contains(keyword)).Value))
+                };
+            }
+            else if (pages.Any(m => m.Key.Contains(keyword)))
+            {
                 return new JlJsonResult()
                 {
                     Content = JlJson.ToJson("/Main/SearchPagesByKeyword?keyword=" + HttpUtility.HtmlEncode(keyword))
@@ -73,17 +78,16 @@ namespace CodeTool.Controllers
 
         }
 
-        public ActionResult SearchPagesByKeyword(string keyword)
+        public ActionResult SearchPagesByKeyword(string keyword, int isall = 0)
         {
             var outModel = new IndexSearchPagesOut();
 
             try
             {
                 var cache = JlHttpCache.Current;
-                var allPages = cache.Get<Dictionary<string, MethodInfo>>("AllPages");
+                var allPages = cache.Get<Dictionary<string, MethodInfo>>("pages");
 
-
-                var result = allPages.Where(m => m.Key.Contains(keyword)).ToDictionary(m => m.Key, m => m.Value);
+                var result = allPages.Where(m => isall == 1 || m.Key.Contains(keyword)).ToDictionary(m => m.Key, m => m.Value);
 
                 if (result.Count > 0)
                 {

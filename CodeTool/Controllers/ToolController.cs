@@ -28,6 +28,20 @@ namespace CodeTool.Controllers
             return View();
         }
 
+        [ViewPage]
+        [Description("GUID字符串")]
+        public ActionResult Guid()
+        {
+            return View();
+        }
+
+        [ViewPage]
+        [Description("RGB颜色值")]
+        public ActionResult Color()
+        {
+            return View();
+        }
+
 
     }
 }

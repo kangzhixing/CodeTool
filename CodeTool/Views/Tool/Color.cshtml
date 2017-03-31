@@ -1,0 +1,159 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "RGB颜色值";
+}
+
+<style type="text/css">
+    .divCondition {
+        margin-bottom: 10px;
+    }
+
+    td {
+        padding: 50px;
+    }
+
+    .divInput {
+        width: 280px;
+        box-shadow: 0 0 10px grey;
+        display: block;
+        padding: 30px 50px;
+        transition: 0.5s;
+    }
+
+    input {
+        outline: none;
+    }
+
+    .result {
+        box-shadow: 0 0 10px #fff;
+        border: none;
+    }
+
+    .w85 {
+        width: 85px;
+    }
+
+    .bsred {
+        box-shadow: 0 0 10px red;
+    }
+</style>
+<div class="divPage">
+    <div>
+        <p>十六进制颜色:<input type="text" id="txtHex" class="w85" value="#" maxlength="7" /></p>
+        <div class="divInput mr50" id="divInputHex">
+            <input type="text" id="txtHexResult" class="w85 result rd5" readonly="readonly" maxlength="6" />
+        </div>
+    </div>
+    <div class="mt50">
+        <p>
+            RGB颜色:
+            <input type="text" id="txtR" maxlength="3" class="txtRgb w25 txtIn" />
+            <input type="text" id="txtG" maxlength="3" class="txtRgb w25 txtIn" />
+            <input type="text" id="txtB" maxlength="3" class="txtRgb w25 txtIn" />
+        </p>
+        <div class="divInput" id="divInputRgb">
+            <input type="text" id="txtRgbResult" class="w85 result rd5" readonly="readonly" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#txtHex").keypress(function (e) {
+        if ("0123456789abcdefABCDEF".indexOf(e.key) < 0) {
+            return false;
+        }
+    });
+    $("#txtHex").bind("keyup", function (e) {
+        var input = $(this).val();
+        if (input != "") {
+            if (input[0] != "#") {
+                $(this).val('#' + input);
+            }
+        } else {
+            $("#divInputHex").css("background-color", "#fff");
+            $("#txtHexResult").val("");
+            $(this).removeClass("bsred");
+            return;
+        }
+
+        if (!showRgb()) {
+            $(this).addClass("bsred");
+            $("#divInputHex").css("background-color", "#fff");
+            $("#txtHexResult").val("");
+        } else {
+            $(this).removeClass("bsred");
+        }
+    });
+
+    function showRgb() {
+        var a = $("#txtHex").val();
+        if (a.substr(0, 1) == "#")
+            a = a.substring(1);
+        if (a.length != 6)
+            return false;
+        $("#divInputHex").css("background-color", "#" + a);
+        a = a.toLowerCase();
+        b = new Array();
+        for (x = 0; x < 3; x++) {
+            b[0] = a.substr(x * 2, 2)
+            b[3] = "0123456789abcdef"; b[1] = b[0].substr(0, 1)
+            b[2] = b[0].substr(1, 1)
+            b[20 + x] = b[3].indexOf(b[1]) * 16 + b[3].indexOf(b[2])
+        }
+        $("#txtHexResult").val(b[20] + "," + b[21] + "," + b[22]);
+        return true;
+    }
+
+    //强制输入格式为0-255的数字
+    $(".txtRgb").keypress(function (e) {
+        if (e.key == " ") {
+            return false;
+        }
+        if (!IsNumber(e.key)) {
+            return false;
+        }
+        var result = $(this).val() + e.key;
+        if (result > 255) {
+            return false;
+        }
+    });
+
+    $(".txtRgb").bind("keyup", function (e) {
+        if ($(this).val() == "") {
+            $(this).addClass("bsred");
+            $("#txtRgbResult").val("");
+            $("#divInputRgb").css("background-color", "#fff");
+            return;
+        } else {
+            $(".txtRgb").removeClass("bsred")
+        }
+
+        if (!showHex()) {
+            $(".txtRgb").addClass("bsred");
+            $("#txtRgbResult").val("");
+            $("#divInputRgb").css("background-color", "#fff");
+        } else {
+            $(".txtRgb").removeClass("bsred")
+        }
+    });
+    function showHex() {
+        var hexcode = '';
+        for (x = 0; x < 3; x++) {
+            var n = $(".txtRgb").eq(x).val();
+            if (n == "") return false;
+            if (parseInt(n) != n) {
+                return false;
+            }
+            if (n > 255)
+                return false;
+            var c = "0123456789ABCDEF", b = "", a = n % 16;
+            b = c.substr(a, 1);
+            a = (n - a) / 16;
+            hexcode += c.substr(a, 1) + b
+        }
+        $("#txtRgbResult").val("#" + hexcode);
+        $("#divInputRgb").css("background-color", "#" + hexcode);
+        return true;
+    }
+
+
+</script>

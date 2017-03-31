@@ -258,6 +258,8 @@
     <Content Include="Views\Main\SearchPage.cshtml" />
     <Content Include="Views\Main\Error.cshtml" />
     <Content Include="Views\Tool\Md5.cshtml" />
+    <Content Include="Views\Tool\Guid.cshtml" />
+    <Content Include="Views\Tool\Color.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

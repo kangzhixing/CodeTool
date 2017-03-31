@@ -41,15 +41,8 @@
         }
     });
 
-    $("#divResult").hover(function () {
+    $("#divResult").bind("mouseover",function () {
         SelectText("divResult");
-    }, function () {
-        if ($("#divResult").createTextRange) {//IE浏览器
-            document.selection.empty();
-        } else if (window.getSelection) {//非IE浏览器
-            window.getSelection().removeAllRanges();
-        }
-
     });
 
 </script>
