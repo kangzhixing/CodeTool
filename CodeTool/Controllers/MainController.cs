@@ -12,7 +12,6 @@ using WebGrease.Css.Extensions;
 using CodeTool.Models.Index;
 using JasonLib.Web;
 using JasonLib.Web.Mvc;
-using SoufunLab.Framework.Web.Mvc;
 
 namespace CodeTool.Controllers
 {

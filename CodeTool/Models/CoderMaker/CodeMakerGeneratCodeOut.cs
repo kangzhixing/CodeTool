@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using CodeTool.common;
-using SoufunLab.Framework.Data;
 
 namespace CodeTool.Models.CoderMaker
 {

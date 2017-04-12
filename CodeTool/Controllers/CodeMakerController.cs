@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using CodeTool.common;
 using CodeTool.Models.CoderMaker;
-using JasonLib;
 using JasonLib.Web;
-using SoufunLab.Framework;
-using SoufunLab.Framework.Configuration;
-using SoufunLab.Framework.Data;
-using SoufunLab.Framework.Web;
-using SoufunLab.Framework.Web.Mvc;
 using Mo = CodeTool.Models;
+using JasonLib;
+using JasonLib.Web.Mvc;
+using JasonLib.Data;
 
 namespace CodeTool.Controllers
 {
@@ -34,9 +28,9 @@ namespace CodeTool.Controllers
 
         public ActionResult GetCodeTypeSlt()
         {
-            var type = Type.GetType(SlConfig.GetValue<string>("ReflectClass"));
+            var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass"));
             
-            return new SlJsonResult()
+            return new JlJsonResult()
             {
                 Content = JlJson.ToJson(type.GetMethods().Where(m => m.Name.StartsWith("Ref")).Select(m => m.Name).ToList())
             };
@@ -78,7 +72,7 @@ namespace CodeTool.Controllers
                 sql = string.Format(sql, inModel.Table);
 
                 var dataTable = new DataTable();
-                SlDatabase.Fill(inModel.ConnectionString, sql, dataTable);
+                JlDatabase.Fill(inModel.ConnectionString, sql, dataTable);
 
                 var fieldDescriptions = dataTable.AsEnumerable().Select(row => new JlFieldDescription()
                 {
@@ -97,7 +91,7 @@ namespace CodeTool.Controllers
                 };
 
                 #region 通过反射调用方法
-                var type = Type.GetType(SlConfig.GetValue<string>("ReflectClass"));
+                var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass"));
                 //声明创建当前类实例
                 var model = Activator.CreateInstance(type);
                 var method = type.GetMethod(inModel.Type);
@@ -107,14 +101,14 @@ namespace CodeTool.Controllers
 
                 #endregion
 
-                return new SlJsonResult()
+                return new JlJsonResult()
                 {
                     Content = JlJson.ToJson(result)
                 };
             }
             catch (Exception ex)
             {
-                return new SlJsonResult()
+                return new JlJsonResult()
                 {
                     Content = JlJson.ToJson(new { Message = ex.Message })
                 };
@@ -146,24 +140,24 @@ namespace CodeTool.Controllers
                 var sql = @"SELECT name AS Name FROM SYSOBJECTS WHERE XTYPE IN ('V','U') AND NAME<>'DTPROPERTIES' ORDER BY Name ASC";
 
                 var dataTable = new DataTable();
-                SlDatabase.Fill(inModel.ConnectionString, sql, dataTable);
+                JlDatabase.Fill(inModel.ConnectionString, sql, dataTable);
 
                 var fields = dataTable.AsEnumerable().Select(row => new
                 {
                     Name = row.Field<string>("Name")
                 }).ToList();
 
-                return new SlJsonResult()
+                return new JlJsonResult()
                 {
-                    Content = SlJson.ToJson(fields)
+                    Content = JlJson.ToJson(fields)
                 };
             }
             catch (Exception exception)
             {
                 //构造异常结果
-                actionResult = new SlJsonResult()
+                actionResult = new JlJsonResult()
                 {
-                    Content = SlJson.ToJson(new { Message = exception.Message })
+                    Content = JlJson.ToJson(new { Message = exception.Message })
                 };
             }
 

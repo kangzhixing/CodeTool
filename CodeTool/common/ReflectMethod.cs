@@ -113,7 +113,7 @@ public class {1}Dao{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {4}		
-        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 5) + "\"", fieldValue.ToString().Substring(0, fieldValue.Length - 5), fieldParameter, tableName);
@@ -157,7 +157,7 @@ public class {1}Dao{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {4}		
-        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", className,
@@ -197,7 +197,7 @@ public class {1}Dao{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {4}		
-        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", JlDbTypeMap.Map4J(f.DbType),
@@ -246,7 +246,7 @@ public class {1}Dao{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {3}		
-        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", tableName, f.Name,
@@ -295,7 +295,7 @@ public class {1}Dao{{
             var fieldDataAccess = string.Format(@"
         List<{0}> list = new ArrayList<{0}>();
 
-        CachedRowSet crs = SlDatabase.fill(connectionString, sql);
+        CachedRowSet crs = JlDatabase.fill(connectionString, sql);
 
         while (crs.next()) {{
             {0} model = new {0}();
@@ -387,7 +387,7 @@ public class {1}Dao{{
             var fieldDataAccess = string.Format(@"
         List<{0}> list = new ArrayList<{0}>();
 
-        CachedRowSet crs = SlDatabase.fill(connectionString, sql);
+        CachedRowSet crs = JlDatabase.fill(connectionString, sql);
 
         while (crs.next()) {{
             {0} model = new {0}();
