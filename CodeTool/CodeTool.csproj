@@ -258,6 +258,7 @@
     <Content Include="Views\Tool\Md5.cshtml" />
     <Content Include="Views\Tool\Guid.cshtml" />
     <Content Include="Views\Tool\Color.cshtml" />
+    <Content Include="Views\Tool\Encode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

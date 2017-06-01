@@ -1,0 +1,75 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "字符编码";
+}
+
+<style type="text/css">
+    .divInput {
+        box-shadow: 0 0 10px grey;
+        display: block;
+        padding: 10px 20px;
+    }
+
+    input {
+        outline: none;
+    }
+
+    textarea {
+        resize: none;
+        outline: none;
+        width: 100%;
+        border: none;
+    }
+
+</style>
+<div class="divPage">
+    <div>
+        <p>
+            <select id="sltEncoding" style="height:36px;position:relative;top:-2px">
+                <option>UTF-8</option>
+                <option>Gb2312</option>
+                <option>Unicode</option>
+            </select>
+            <input type="button" class="jk-button" id="btnEncode" value="编码" />
+            <input type="button" class="jk-button" id="btnDecode" value="解码" />
+        </p>
+        <div class="divInput" id="divInputHex">
+            <textarea id="txtDecode" rows="8"></textarea>
+        </div>
+        <div class="divInput mt20" id="divInputRgb">
+            <textarea id="txtEncode" rows="8"></textarea>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+   
+    $("#btnEncode").bind("click", function (e) {
+        $.getJSON("/Tool/EncodeString", {
+            str: $("#txtDecode").val(),
+            encoding: $("#sltEncoding").find("option:selected").val()
+        }, function (data) {
+            if (data != null && data.Message != null) {
+                alert(data.Message);
+            }
+            else {
+                $("#txtEncode").val(data);
+            }
+        });
+    });
+
+    $("#btnDecode").bind("click", function (e) {
+        $.getJSON("/Tool/DecodeString", {
+            str: $("#txtEncode").val(),
+            encoding: $("#sltEncoding").find("option:selected").val()
+        }, function (data) {
+            if (data != null && data.Message != null) {
+                alert(data.Message);
+            }
+            else {
+                $("#txtDecode").val(data);
+            }
+        });
+    });
+
+
+</script>
