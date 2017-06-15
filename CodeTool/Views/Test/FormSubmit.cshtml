@@ -9,6 +9,39 @@
     <title>Welcome</title>
 </head>
 <body>
+    <form method="post" id="QueryPayForAnotherFee" action="http://jk.payment.test.fang.com/OrgInside/QueryPayForAnotherFee.html">
+        <input type="hidden" name="PageSize" value="20" />
+        <input type="hidden" name="PageCount" value="3" />
+        <input type="hidden" name="sdate" value="2015-06-01" />
+        <input type="hidden" name="edate" value="2017-06-01" />
+        <input type="hidden" name="BizID" value="907020150715100001" />
+        <input type="hidden" name="Token" value="20170420144000" />
+    </form>
+    <form method="post" id="inquiryfee" action="http://pay.fang.com/GateWay.aspx">
+        <input type="hidden" name="ServiceName" value="inquiryfee" />
+        <input type="hidden" name="PageSize" value="20" />
+        <input type="hidden" name="PageCount" value="3" />
+        <input type="hidden" name="Product" value="9" />
+        <input type="hidden" name="sdate" value="2015-06-01" />
+        <input type="hidden" name="edate" value="2017-06-01" />
+        <input type="hidden" name="bizid" value="822121059430044" />
+        <input type="hidden" name="Key" value="pacb0wgrkaw6aklwn4ttpemwz35yifj2jmy4nadh3d23gjm3uef1a0bkxpl5zqjez3xwvqin1mzmlrqprbedar1sknh7yhqm3yemuyid41axay8f84nxmfeicflhjkx2" />
+    </form>
+    <form method="post" id="BizPayInVerify" action="http://jk.payment.test.fang.com/OrgInside/BizPayInVerify.html">
+        <input type="hidden" name="ThirdPartyID" value="BJ00000242017050901KR1" />
+        <input type="hidden" name="BizID" value="907020150715100001" />
+        <input type="hidden" name="Token" value="20170420144000" />
+        <input type="hidden" name="PayInChannel" value="alipay^debitpay" />
+        <input type="hidden" name="PayType" value="payin" />
+        <input type="hidden" name="MoneyQuantity" value="0.01" />
+    </form>
+    <form method="post" id="payforanother" action="http://pay.fang.com/GateWayPage/payforanother.aspx">
+        <input type="hidden" name="ServiceName" value="payforanother" />
+        <input type="hidden" name="Key" value="pacb0wgrkaw6aklwn4ttpemwz35yifj2jmy4nadh3d23gjm3uef1a0bkxpl5zqjez3xwvqin1mzmlrqprbedar1sknh7yhqm3yemuyid41axay8f84nxmfeicflhjkx2" />
+        <input type="hidden" name="token" value="20170420144000" />
+        <input type="hidden" name="Product" value="9" />
+        <input type="hidden" name="tradelist" id="hdtradelist" />
+    </form>
     <form method="post" id="refund_by_user" action="http://pay.fang.com/GateWayPage/refund_by_user.aspx">
         <input type="hidden" name="MallPayId" value="7132" />
         <input type="hidden" name="RefundAmount" value="0.01" />
@@ -69,8 +102,7 @@
     </form>
     <script type="text/javascript">
         $(function () {
-            //Employee_LoginSubmit();
-            $("#refund_by_user").submit();;
+            $("#QueryPayForAnotherFee").submit();
         });
 
         function Employee_LoginSubmit() {
@@ -80,31 +112,34 @@
 
         }
 
-        function ajaxPost() {
+        function PostPayNotify() {
             $.ajax({
                 async: true,
                 type: "POST",
                 url:
-                "http://pay.fang.com/LakalaPayPlus/PayNotify.aspx?sign=Iosl7%2BcnSSqgT%2Foqf%2BGCSOKt8iens5ysSSen8ANU3jfMDjyhkwINa0ONM5w4LtfudKWxkGNX55sYZa0lHdpbcB0wo03a7eopoaYrGxj7ntdX9pcSRg2yLsi6fhGhJMX%2BklPCX4xIJZZrvkgHCv%2Fad6WaPFa53JcK8M4Nf2rfADI%3D",
+                "http://pay.test.fang.com/LakalaPayPlus/PayNotify.aspx",
                 data: {
-                    "mch_id": "822290054620192",
-                    "device_info": "93043377",
-                    "result_code": "FAIL",
-                    "trade_type": "012401",
-                    "total_fee": "000000000000001",
-                    "transaction_id": "17030720083846",
-                    "out_trade_no": "9170307000016671",
-                    "time_end": "20170307102647",
-                    "pay_type": "92",
-                    "card_no": "130010********7974",
-                    "pay_amt": "000000000000001",
-                    "batchbillno": "000001",
-                    "systraceno": "000038",
-                    "orderid_scan": "",
-                    "bank_type": "",
-                    "refernumber": "030720083846",
-                    "coupon_fee": "",
-                    "openid": ""
+                    "sign": "AxZVHxzgS%2FfEHBYqOYnXOKr6030ZppDHxp8rzhJ397MxF11t1p1JU99%2FpcWi47Kcbc6162r6UtSQZwoA4ZN%2FZn7aewvomAPoGQPWNfdkU3MaibnBDWfv5DlDst7o01zfjhAXDYdFuW2EuijFjCjtz2ILGzPrmKJaPntOOqoxmEA%3D",
+                    "data": "{\'mch_id\': \'822290054620192\',"
+                    + "\'device_info\': \'93043376\',"
+                    + "\'result_code\': \'SUCCESS\',"
+                    + "\'trade_type\': \'012001\',"
+                    + "\'total_fee\': \'000000000000004\',"
+                    + "\'transaction_id\': \'17060751612019\',"
+                    + "\'out_trade_no\': \'7170607000013337\',"
+                    + "\'time_end\': \'20170607161441\',"
+                    + "\'pay_type\': \'01\',"
+                    + "\'card_no\': \'622163******9813\',"
+                    + "\'pay_amt\': \'000000000000004\',"
+                    + "\'batchbillno\': \'000001\',"
+                    + "\'systraceno\': \'000057\',"
+                    + "\'orderid_scan\': \'\',"
+                    + "\'bank_type\': \'64031000\',"
+                    + "\'refernumber\': \'060751612019\',"
+                    + "\'coupon_fee\': \'\',"
+                    + "\'attach\': \'\',"
+                    + "\'openid\': \'\'"
+                    + "}"
                 },
                 success: function (result) {
                     console.log(result);

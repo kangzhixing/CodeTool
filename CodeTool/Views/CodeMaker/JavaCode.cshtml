@@ -8,7 +8,7 @@
     }
 
     .divCondition {
-        margin-bottom: 10px;
+        margin: 10px 0;
     }
 
     .divContent {
@@ -17,6 +17,7 @@
     }
 </style>
 <div id="pageMSSQL" class="divPage">
+    <div class="divTitleText"></div>
     <div class="divCondition">
         <div>
             <button id="btnConnect" class="jk-button mr15">连接</button>
@@ -86,7 +87,7 @@
             $("#sltDataType").html('');
             var html = '';
             for (var i = 0; i < data.length; i++) {
-                html += "<option value='" + data[i] + "'>" + data[i].replaceAll("Ref","") + "</option>";
+                html += "<option value='" + data[i] + "'>" + data[i].replaceAll("Ref", "") + "</option>";
             }
             $("#sltDataType").html(html);
         });
@@ -117,7 +118,7 @@
         });
     });
 
-    $("#divCode").bind("mouseover",function () {
+    $("#divCode").bind("mouseover", function () {
         SelectText("divCode");
     });
 

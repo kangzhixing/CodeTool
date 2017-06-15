@@ -23,9 +23,38 @@ input[type=text] {
     font-weight: 400;
 }
 
+.divCondition {
+    margin: 10px 0;
+}
+
 #divTopPage {
     width: 900px;
-    margin: 10px auto;
+    margin: auto auto;
+    height: 65px;
+    overflow: hidden;
+}
+
+#divHeadPart {
+    transition: 0.3s;
+    height: 65px;
+    padding: 10px 0;
+}
+
+#divTitlePart {
+    transition: 0.3s;
+    padding: 10px 0;
+    height: 65px;
+}
+
+.divTitleText {
+    text-align:center;
+    font-size: 30px;
+    font-weight: 400;
+    color: #757575;
+}
+
+.divPage .divTitleText {
+    font-size: 25px;
 }
 
 #divIndex {
@@ -81,7 +110,7 @@ input[type=text] {
     }
 
 .divRenderBody {
-    margin-top: 100px;
+    margin-top: 80px;
 }
 
 .divPage {
@@ -106,8 +135,8 @@ input[type=text] {
     float: right;
 }
 
-.cp{
-    cursor:pointer;
+.cp {
+    cursor: pointer;
 }
 
 .rd5 {
