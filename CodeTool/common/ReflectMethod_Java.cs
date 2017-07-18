@@ -7,7 +7,7 @@ using CodeTool.Models.CoderMaker;
 
 namespace CodeTool.common
 {
-    public class ReflectMethod
+    public class ReflectMethod_Java
     {
         #region 反射调用方法
 
@@ -44,7 +44,6 @@ public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "ent
 
             return result.ToString();
         }
-
 
         //Dao通用代码
         private static string DaoBaseCode(CodeMakerGeneratCodeOut inModel, string content = null)
@@ -235,7 +234,7 @@ public class {1}Dao{{
     * @param connectionString 连接字符串
     * @param {6} {4}
     * 
-    * @return 修改成功与否
+    * @return 查询结果
     */
     public static boolean GetBy{1}(String connectionString, {5} {6}) throws Exception {{
         String sql = ""SELECT ""
@@ -311,7 +310,7 @@ public class {1}Dao{{
     * 
     * @param connectionString 连接字符串
     * 
-    * @return 修改成功与否
+    * @return 查询结果
     */
     public static List<{1}> GetAll(String connectionString) throws Exception {{
         String sql = {0};

@@ -20,16 +20,23 @@ namespace CodeTool.Controllers
         // GET: /Default/
 
         [ViewPage]
+        [Description(".Net代码生成器")]
+        public ActionResult DotnetCode()
+        {
+            return View();
+        }
+
+        [ViewPage]
         [Description("Java代码生成器")]
         public ActionResult JavaCode()
         {
             return View();
         }
 
-        public ActionResult GetCodeTypeSlt()
+        public ActionResult GetCodeTypeSlt(string lang)
         {
-            var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass"));
-            
+            var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass") + "_" + lang);
+
             return new JlJsonResult()
             {
                 Content = JlJson.ToJson(type.GetMethods().Where(m => m.Name.StartsWith("Ref")).Select(m => m.Name).ToList())
@@ -42,11 +49,11 @@ namespace CodeTool.Controllers
             UpdateModel(inModel);
             try
             {
+                inModel.Lang = HttpUtility.UrlDecode(inModel.Lang);
                 inModel.ClassName = HttpUtility.UrlDecode(inModel.ClassName);
                 inModel.ConnectionString = HttpUtility.UrlDecode(inModel.ConnectionString);
                 inModel.Package = HttpUtility.UrlDecode(inModel.Package);
                 inModel.Table = HttpUtility.UrlDecode(inModel.Table);
-
 
                 var sql = @"
                     WITH T AS
@@ -91,13 +98,12 @@ namespace CodeTool.Controllers
                 };
 
                 #region 通过反射调用方法
-                var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass"));
+                var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass") + "_" + inModel.Lang);
                 //声明创建当前类实例
                 var model = Activator.CreateInstance(type);
                 var method = type.GetMethod(inModel.Type);
 
                 var result = method.Invoke(model, new object[] { outModel }).ToString();
-
 
                 #endregion
 
@@ -113,9 +119,6 @@ namespace CodeTool.Controllers
                     Content = JlJson.ToJson(new { Message = ex.Message })
                 };
             }
-
-
-            //return View("/Views/CodeMaker/CodeMakerResult.cshtml", new Mo.CoderMaker.CodeMakerGeneratCodeOut { CodeMakerGeneratCodeIn = inModel, FieldDescriptions = fieldDescriptions });
 
         }
 

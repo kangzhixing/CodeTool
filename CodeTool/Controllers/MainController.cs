@@ -84,13 +84,8 @@ namespace CodeTool.Controllers
             try
             {
                 var cache = JlHttpCache.Current;
-
                 var allPages = cache.Get<Dictionary<string, MethodInfo>>("pages");
-                if (allPages == null)
-                {
-                    allPages = CommonMethod.GetAllPageMethod();
-                    cache.Set("pages", allPages);
-                }
+
                 var result = allPages.Where(m => isall == 1 || m.Key.Contains(keyword)).ToDictionary(m => m.Key, m => m.Value);
 
                 if (result.Count > 0)
