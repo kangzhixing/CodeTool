@@ -134,7 +134,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="common\AuthorizeFilterAttribute.cs" />
     <Compile Include="common\CommonMethod.cs" />
-    <Compile Include="common\ReflectMethod.cs" />
+    <Compile Include="common\ReflectMethod_Dotnet.cs" />
+    <Compile Include="common\ReflectMethod_Java.cs" />
     <Compile Include="common\ViewPageAttribute.cs" />
     <Compile Include="Controllers\ToolController.cs" />
     <Compile Include="Controllers\MainController.cs" />
@@ -210,6 +211,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\base.css" />
+    <Content Include="Dll\JasonLib.dll" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <None Include="Dockerfile" />
@@ -259,6 +261,7 @@
     <Content Include="Views\Tool\Guid.cshtml" />
     <Content Include="Views\Tool\Color.cshtml" />
     <Content Include="Views\Tool\Encode.cshtml" />
+    <Content Include="Views\CodeMaker\DotnetCode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

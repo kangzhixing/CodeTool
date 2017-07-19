@@ -334,9 +334,9 @@ namespace {1}
             {
                 field.AppendLine("                [" + f.Name + "],");
                 if (JlDbTypeMap.Map(f.DbType) == "string")
-                    fieldSetModel.AppendLine(string.Format("                {0} = row[\"{0}\"].ToString(),", f.Name, JlString.ToLowerFirst(className)));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = row[\"{0}\"].ToString(),", f.Name, JlString.ToLowerFirst(className)));
                 else
-                    fieldSetModel.AppendLine(string.Format("                {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(f.DbType))));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(f.DbType))));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
@@ -345,8 +345,8 @@ namespace {1}
             @""WITH Virtual_T AS(
                 SELECT
 {0}                
-                ROW_NUMBER() OVER (%s) AS [RowNumber]
-                FROM [{1}] WITH (NOLOCK)%s)
+                ROW_NUMBER() OVER ({{0}}) AS [RowNumber]
+                FROM [{1}] WITH (NOLOCK){{1}})
             SELECT * FROM Virtual_T
             WHERE @PageSize * (@CurrentPage - 1) < RowNumber AND RowNumber <= @PageSize * @CurrentPage""",
                 field.ToString().Substring(0, field.Length - 1),
@@ -363,10 +363,10 @@ namespace {1}
             {{
                 list = dataTable.AsEnumerable().Select(row => new En.{0}()
                 {{
-    {1}
+{1}
                 }});
             }}
-            return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 2));
+            return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 3));
 
             codeStr.AppendLine(string.Format(@"
         /// <summary>

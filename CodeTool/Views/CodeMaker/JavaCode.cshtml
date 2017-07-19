@@ -79,7 +79,7 @@
     });
 
     function InitCodeTypeSlt() {
-        $.getJSON("/CodeMaker/GetCodeTypeSlt", function (data) {
+        $.getJSON("/CodeMaker/GetCodeTypeSlt?lang=Java", function (data) {
             $("#sltDataType").html('');
             var html = '';
             for (var i = 0; i < data.length; i++) {
@@ -97,6 +97,7 @@
         var className = $("#txtClassName").val();
         var type = $("#sltDataType").val();
         $.getJSON("/CodeMaker/GeneratCode", {
+            lang: "Java",
             ConnectionString: encodeURIComponent(connectionString),
             Table: table,
             Package: pkg,
