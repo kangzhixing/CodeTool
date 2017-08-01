@@ -40,20 +40,21 @@ namespace {0}
 
             result.AppendLine(string.Format(@"
 using System;
-using En = {0};
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using JasonLib.Data;
 using System.Data;
+using System.Linq;
+using En = {3};
 
-namespace {1}
+namespace {0}
 {{
 
-    public class {2}Dao{{
-    {3}
+    public class {1}Dao{{
+    {2}
 
     }}
-}}", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "Entity"), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "Dao"), inModel.CodeMakerGeneratCodeIn.ClassName, content));
+}}", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "Dao"), inModel.CodeMakerGeneratCodeIn.ClassName, content, string.Format(inModel.CodeMakerGeneratCodeIn.Package, "Entity")));
 
             return result.ToString();
         }
@@ -79,6 +80,10 @@ namespace {1}
 
 
             var codeStr = string.Format(@"
+
+
+        #region 添加
+
         /// <summary>
         /// 添加实体
         /// </summary>
@@ -97,7 +102,9 @@ namespace {1}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}", className, tableName, field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter);
+        }}
+
+        #endregion", className, tableName, field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter);
             return DaoBaseCode(inModel, codeStr);
         }
 
@@ -125,6 +132,10 @@ namespace {1}
                 });
 
                 codeStr.AppendLine(string.Format(@"
+
+
+        #region 修改
+
         /// <summary>
         /// 修改实体
         /// </summary>
@@ -142,7 +153,9 @@ namespace {1}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}", className,
+        }}
+
+        #endregion", className,
                 JlString.ToLowerFirst(className),
                 field.ToString().Substring(0, field.Length - 4),
                 f.Name,
@@ -165,6 +178,9 @@ namespace {1}
                 fieldParameter.AppendLine();
 
                 codeStr.AppendLine(string.Format(@"
+
+        #region 删除
+
         /// <summary>
         /// 通过{3}删除实体
         /// </summary>
@@ -180,7 +196,9 @@ namespace {1}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}", JlDbTypeMap.Map(f.DbType),
+        }}
+
+        #endregion", JlDbTypeMap.Map(f.DbType),
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
@@ -205,6 +223,9 @@ namespace {1}
                 });
 
                 codeStr.AppendLine(string.Format(@"
+
+        #region 查询
+
         /// <summary>
         /// 通过{1}查询实体
         /// </summary>
@@ -223,7 +244,9 @@ namespace {1}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}", tableName, f.Name,
+        }}
+
+        #endregion", tableName, f.Name,
                 field.ToString().Substring(0, field.Length - 3),
                 fieldParameter));
                 //    }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter));
@@ -275,7 +298,7 @@ namespace {1}
             list = dataTable.AsEnumerable().Select(row => new En.{0}()
             {{
 {1}
-            }});
+            }}).ToList();
         }}
         return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 2));
 
@@ -296,6 +319,10 @@ namespace {1}
 
                 var sqlWhere = string.Format("WHERE [{0}] = @{0}", f.Name);
                 codeStr.AppendLine(string.Format(@"
+
+
+        #region 查询
+
         /// <summary>
         /// 查询实体列表（不存在时，返回null）
         /// </summary>
@@ -308,7 +335,9 @@ namespace {1}
             var parameters = new List<SqlParameter>();
 {2}
 {4}
-    }}", getSelectSql(field.ToString(), sqlWhere), className, fieldParameter, f.Name, fieldDataAccess));
+    }}
+
+        #endregion", getSelectSql(field.ToString(), sqlWhere), className, fieldParameter, f.Name, fieldDataAccess));
 
             });
 
@@ -364,11 +393,15 @@ namespace {1}
                 list = dataTable.AsEnumerable().Select(row => new En.{0}()
                 {{
 {1}
-                }});
+                }}).ToList();
             }}
             return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 3));
 
             codeStr.AppendLine(string.Format(@"
+
+
+        #region 查询
+
         /// <summary>
         /// 查询所有实体列表（不存在时，返回null）
         /// </summary>
@@ -378,7 +411,7 @@ namespace {1}
         /// <param name=""sqlWhere"">判断条件语句</param>
         /// <param name=""sqlOrder"">排序语句</param>
         /// <returns>查询结果集</returns>
-        public static List<En.{1}> GetPageListByConditionAndOrder(String connectionString, int pageSize, int currentPage, 
+        public static List<En.{1}> GetPageListByConditionAndOrder(string connectionString, int pageSize, int currentPage, 
             string sqlWhere, string sqlOrder) {{
             string sql = {0};
 
@@ -389,7 +422,10 @@ namespace {1}
             parameters.Add(new SqlParameter() {{ ParameterName = ""PageSize"", Value = pageSize }});
             parameters.Add(new SqlParameter() {{ ParameterName = ""CurrentPage"", Value = currentPage }});
 {2}
-        }}", getSelectSql(field.ToString(), null), className, fieldDataAccess));
+        }}
+
+        #endregion
+", getSelectSql(field.ToString(), null), className, fieldDataAccess));
 
 
             return DaoBaseCode(inModel, codeStr.ToString());
