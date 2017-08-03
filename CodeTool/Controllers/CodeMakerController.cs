@@ -65,7 +65,8 @@ namespace CodeTool.Controllers
 		                    COLUMNPROPERTY(A.ID,A.NAME,'PRECISION') AS Length,
 		                    (CASE WHEN A.ISNULLABLE=1 THEN 'true'ELSE 'false' END) AS IsNullable,
 							(CASE WHEN A.COLSTAT=1 THEN 'true'ELSE 'false' END) AS IsIdentity,
-		                    ISNULL(G.[VALUE],'') AS Description
+		                    ISNULL(G.[VALUE],'') AS Description,
+                            colorder
 	                    FROM  SYSCOLUMNS  A LEFT JOIN SYSTYPES B
 	                    ON  A.XTYPE=B.XUSERTYPE
 	                    INNER JOIN SYSOBJECTS D
@@ -75,7 +76,7 @@ namespace CodeTool.Controllers
 	                    LEFT JOIN SYS.EXTENDED_PROPERTIES G
 	                    ON A.ID=G.MAJOR_ID AND A.COLID = G.MINOR_ID
                     )
-                    SELECT Name,DbType,Length,IsNullable,IsIdentity,Description FROM T WHERE TableName = '{0}'";
+                    SELECT Name,DbType,Length,IsNullable,IsIdentity,Description FROM T WHERE TableName = '{0}' ORDER BY colorder";
                 sql = string.Format(sql, inModel.Table);
 
                 var dataTable = new DataTable();

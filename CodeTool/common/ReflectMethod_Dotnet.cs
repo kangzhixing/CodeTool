@@ -82,8 +82,6 @@ namespace {0}
             var codeStr = string.Format(@"
 
 
-        #region 添加
-
         /// <summary>
         /// 添加实体
         /// </summary>
@@ -102,10 +100,16 @@ namespace {0}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}
+        }}", className, tableName, field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter);
 
-        #endregion", className, tableName, field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter);
-            return DaoBaseCode(inModel, codeStr);
+            return DaoBaseCode(inModel, @"
+
+        #region 添加
+
+" + codeStr.ToString() + @"
+
+
+        #endregion");
         }
 
         /// <summary>
@@ -134,8 +138,6 @@ namespace {0}
                 codeStr.AppendLine(string.Format(@"
 
 
-        #region 修改
-
         /// <summary>
         /// 修改实体
         /// </summary>
@@ -153,16 +155,21 @@ namespace {0}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}
-
-        #endregion", className,
+        }}", className,
                 JlString.ToLowerFirst(className),
                 field.ToString().Substring(0, field.Length - 4),
                 f.Name,
                 fieldParameter,
                 tableName));
             });
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return DaoBaseCode(inModel, @"
+
+        #region 修改
+
+" + codeStr.ToString() + @"
+
+
+        #endregion");
         }
 
         public string RefDaoDelete(CodeMakerGeneratCodeOut inModel)
@@ -179,7 +186,7 @@ namespace {0}
 
                 codeStr.AppendLine(string.Format(@"
 
-        #region 删除
+
 
         /// <summary>
         /// 通过{3}删除实体
@@ -196,15 +203,20 @@ namespace {0}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}
-
-        #endregion", JlDbTypeMap.Map(f.DbType),
+        }}", JlDbTypeMap.Map(f.DbType),
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
                 string.Format("        parameters.Add(new SqlParameter() {{ ParameterName = \"{0}\", Value = {1} }});", f.Name, JlString.ToLowerFirst(f.Name))));
             });
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return DaoBaseCode(inModel, @"
+
+        #region 删除
+
+" + codeStr.ToString() + @"
+
+
+        #endregion");
         }
 
         public string RefDaoGet(CodeMakerGeneratCodeOut inModel)
@@ -212,19 +224,23 @@ namespace {0}
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
             var codeStr = new StringBuilder();
+            var field = new StringBuilder();
+            var fieldSetModel = new StringBuilder();
+
+            inModel.FieldDescriptions.ForEach(ff =>
+            {
+                field.AppendLine("                [" + ff.Name + "],");
+                if (JlDbTypeMap.Map(ff.DbType) == "string")
+                    fieldSetModel.AppendLine(string.Format("                    {0} = row[\"{0}\"].ToString(),", ff.Name, JlString.ToLowerFirst(className)));
+                else
+                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", ff.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(ff.DbType))));
+            });
             inModel.FieldDescriptions.ForEach(f =>
             {
-                var field = new StringBuilder();
                 var fieldParameter = new StringBuilder();
                 fieldParameter.AppendLine(string.Format("            parameters.Add(new SqlParameter() {{ ParameterName = \"{0}\", Value = wherePart.{0} }});", f.Name, JlString.ToLowerFirst(className)));
-                inModel.FieldDescriptions.ForEach(ff =>
-                {
-                    field.AppendLine("                [" + ff.Name + "],");
-                });
 
                 codeStr.AppendLine(string.Format(@"
-
-        #region 查询
 
         /// <summary>
         /// 通过{1}查询实体
@@ -232,7 +248,7 @@ namespace {0}
         /// <param name=""connectionString"">连接字符串</param>
         /// <param name=""wherePart"">删除属性</param>
         /// <returns>查询结果</returns>
-        public static bool GetBy{1}(string connectionString, dynamic wherePart) {{
+        public static En.{4} GetBy{1}(string connectionString, dynamic wherePart) {{
             var sql = @""SELECT
 {2}
                 FROM [{0}] WITH (NOLOCK)
@@ -241,17 +257,35 @@ namespace {0}
             var parameters = new List<SqlParameter>();
 
 {3}		
-            var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
-		
-            return i > 0;
-        }}
+            var dataTable = new DataTable();
+            SlDatabase.Fill(connectionString, sql, dataTable, parameters.ToArray());
 
-        #endregion", tableName, f.Name,
+            if (dataTable.Rows.Count > 0)
+            {{
+                var row = dataTable.Rows[0];
+                return new En.ConsumeType()
+                {{
+{5}
+                }};
+            }}
+            else
+            {{
+                return null;
+            }}
+        }}
+", tableName, f.Name,
                 field.ToString().Substring(0, field.Length - 3),
-                fieldParameter));
+                fieldParameter, className, fieldSetModel));
                 //    }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter));
             });
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return DaoBaseCode(inModel, @"
+
+        #region 查询
+
+"+codeStr.ToString()+ @"
+
+
+        #endregion");
         }
 
         /// <summary>
@@ -323,6 +357,8 @@ namespace {0}
 
         #region 查询
 
+
+
         /// <summary>
         /// 查询实体列表（不存在时，返回null）
         /// </summary>
@@ -386,7 +422,7 @@ namespace {0}
             var list = new List<En.{0}>();
 
             var dataTable = new DataTable();
-            JlDatabase.Fill(connectionString, sql, dataTable);
+            JlDatabase.Fill(connectionString, sql, dataTable, parameters.ToArray());
 
             if (dataTable.Rows.Count > 0)
             {{
@@ -397,10 +433,31 @@ namespace {0}
             }}
             return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 3));
 
+            var fieldDataAccess_Count = string.Format(@"
+            var list = new List<En.{0}>();
+
+            var dataTable = new DataTable();
+            JlDatabase.Fill(connectionString, sql, dataTable, parameters.ToArray());
+
+            //记录总数计算
+            var sqlCount = string.Format(""SELECT COUNT(*) CNT FROM [{2}] {{0}} "", string.IsNullOrEmpty(sqlWhere) ? """" : "" WHERE("" + sqlWhere.Remove(sqlWhere.Length - 4) + "")"");
+            totalCount = SlConvert.TryToInt32(JlDatabase.ExecuteScalar(connectionString, sqlCount));
+
+            if (dataTable.Rows.Count > 0)
+            {{
+                list = dataTable.AsEnumerable().Select(row => new En.{0}()
+                {{
+{1}
+                }}).ToList();
+            }}
+            return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 3), tableName);
+
             codeStr.AppendLine(string.Format(@"
 
 
         #region 查询
+
+
 
         /// <summary>
         /// 查询所有实体列表（不存在时，返回null）
@@ -416,7 +473,31 @@ namespace {0}
             string sql = {0};
 
             // 条件查询部分
-            sql = string.Format(sql, sqlOrder, sqlWhere.Length == 0 ? """" : "" WHERE ("" + sqlWhere.Substring(0, sqlWhere.Length - 4) + "")"");
+            sql = string.Format(sql, sqlOrder, string.IsNullOrEmpty(sqlWhere) ? """" : "" WHERE ("" + sqlWhere.Substring(0, sqlWhere.Length - 4) + "")"");
+            var parameters = new List<SqlParameter>();
+
+            parameters.Add(new SqlParameter() {{ ParameterName = ""PageSize"", Value = pageSize }});
+            parameters.Add(new SqlParameter() {{ ParameterName = ""CurrentPage"", Value = currentPage }});
+{2}
+        }}", getSelectSql(field.ToString(), null), className, fieldDataAccess));
+
+            codeStr.AppendLine(string.Format(@"
+
+        /// <summary>
+        /// 查询所有实体列表（不存在时，返回null）
+        /// </summary>
+        /// <param name=""connectionString"">连接字符串</param>
+        /// <param name=""pageSize"">每页行数</param>
+        /// <param name=""currentPage"">当前页码</param>
+        /// <param name=""sqlWhere"">判断条件语句</param>
+        /// <param name=""sqlOrder"">排序语句</param>
+        /// <returns>查询结果集</returns>
+        public static List<En.{1}> GetPageListByConditionAndOrder(string connectionString, int pageSize, int currentPage, 
+            string sqlWhere, string sqlOrder, out int totalCount) {{
+            string sql = {0};
+
+            // 条件查询部分
+            sql = string.Format(sql, sqlOrder, string.IsNullOrEmpty(sqlWhere) ? """" : "" WHERE ("" + sqlWhere.Substring(0, sqlWhere.Length - 4) + "")"");
             var parameters = new List<SqlParameter>();
 
             parameters.Add(new SqlParameter() {{ ParameterName = ""PageSize"", Value = pageSize }});
@@ -425,8 +506,7 @@ namespace {0}
         }}
 
         #endregion
-", getSelectSql(field.ToString(), null), className, fieldDataAccess));
-
+", getSelectSql(field.ToString(), null), className, fieldDataAccess_Count));
 
             return DaoBaseCode(inModel, codeStr.ToString());
         }

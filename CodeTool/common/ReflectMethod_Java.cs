@@ -215,17 +215,21 @@ public class {1}Dao{{
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
             var codeStr = new StringBuilder();
+            var field = new StringBuilder();
+            var fieldSetModel = new StringBuilder();
             inModel.FieldDescriptions.ForEach(f =>
             {
-                var field = new StringBuilder();
+                field.AppendLine("            + \"[" + f.Name + "], \"");
+                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
+                    ? string.Format("            model.set" + f.Name + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + f.Name + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+            });
+            inModel.FieldDescriptions.ForEach(f =>
+            {
                 var fieldParameter = new StringBuilder();
                 fieldParameter.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.get{0}().getTime()));", f.Name, JlString.ToLowerFirst(className))
-                    : string.Format("        parameters.put(\"{0}\", {1}.get{0}());", f.Name, JlString.ToLowerFirst(className)));
-                inModel.FieldDescriptions.ForEach(ff =>
-                {
-                    field.AppendLine("            + \"[" + ff.Name + "], \"");
-                });
+                    ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.getTime()));", f.Name, JlString.ToLowerFirst(f.Name))
+                    : string.Format("        parameters.put(\"{0}\", {1});", f.Name, JlString.ToLowerFirst(f.Name)));
 
                 codeStr.AppendLine(string.Format(@"
     /**
@@ -236,7 +240,7 @@ public class {1}Dao{{
     * 
     * @return 查询结果
     */
-    public static boolean GetBy{1}(String connectionString, {5} {6}) throws Exception {{
+    public static {5} GetBy{1}(String connectionString, {9} {8}) throws Exception {{
         String sql = ""SELECT ""
 {2}
             + ""FROM [{0}] WITH (NOLOCK) ""
@@ -245,17 +249,25 @@ public class {1}Dao{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {3}		
-        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
-		
-        return i > 0;
+        CachedRowSet crs = JlDatabase.fill(connectionString, sql, parameters);
+
+        while (crs.next()) {{
+            {5} model = new {5}();
+{7}
+            return model;
+        }}
+        return null;
     }}", tableName, f.Name,
                 field.ToString().Substring(0, field.Length - 5) + " \"",
                 fieldParameter,
                 f.Description,
                 className,
-                JlString.ToLowerFirst(className)));
-                //    }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter));
+                JlString.ToLowerFirst(className),
+                fieldSetModel,
+                JlString.ToLowerFirst(f.Name),
+                JlDbTypeMap.Map4J(f.DbType)));
             });
+
             return DaoBaseCode(inModel, codeStr.ToString());
         }
 
