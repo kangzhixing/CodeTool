@@ -14,8 +14,7 @@ namespace CodeTool.common
         public string RefEntity(CodeMakerGeneratCodeOut inModel)
         {
             var result = new StringBuilder();
-            result.AppendLine(string.Format(@"
-using System;
+            result.AppendLine(string.Format(@"using System;
 
 namespace {0}
 {{
@@ -24,7 +23,10 @@ namespace {0}
             inModel.FieldDescriptions.ForEach(f =>
             {
                 result.AppendLine(@"
-        public " + JlDbTypeMap.Map(f.DbType, f.IsNullable) + " " + f.Name + " { get; set; }" + (string.IsNullOrWhiteSpace(f.Description) ? "" : " //" + f.Description));
+        /// <summary>
+        /// " + (string.IsNullOrWhiteSpace(f.Description) ? f.Name : f.Description) + @"
+        /// </summary>
+        public " + JlDbTypeMap.Map(f.DbType, f.IsNullable) + " " + f.Name + " { get; set; }");
             });
             result.AppendLine(@"
     }
@@ -38,8 +40,7 @@ namespace {0}
         {
             var result = new StringBuilder();
 
-            result.AppendLine(string.Format(@"
-using System;
+            result.AppendLine(string.Format(@"using System;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using JasonLib.Data;
@@ -144,7 +145,7 @@ namespace {0}
         /// <param name=""connectionString"">连接字符串</param>
         /// <param name=""wherePart"">修改实体</param>
         /// <returns>修改成功与否</returns>
-        public static bool UpdateBy{3}(string connectionString, dynamic wherePart) {{
+        public static bool UpdateBy{6}(string connectionString, dynamic wherePart) {{
             var sql = @""UPDATE [{5}] SET 
 {2}
                WHERE [{3}] = @{3}"";
@@ -160,7 +161,8 @@ namespace {0}
                 field.ToString().Substring(0, field.Length - 4),
                 f.Name,
                 fieldParameter,
-                tableName));
+                tableName,
+                JlString.ToUpperFirst(f.Name)));
             });
             return DaoBaseCode(inModel, @"
 
@@ -194,12 +196,12 @@ namespace {0}
         /// <param name=""connectionString"">连接字符串</param>
         /// <param name=""wherePart"">删除属性</param>
         /// <returns>删除成功与否</returns>
-        public static bool DeleteBy{3}(string connectionString, {0} {1}) {{
+        public static bool DeleteBy{4}(string connectionString, {0} {1}) {{
             var sql = ""DELETE FROM [{2}] WHERE [{3}] = @{3}"";
 		
             var parameters = new List<SqlParameter>();
 
-    {4}		
+    {5}		
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
@@ -207,6 +209,7 @@ namespace {0}
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
+                JlString.ToUpperFirst(f.Name),
                 string.Format("        parameters.Add(new SqlParameter() {{ ParameterName = \"{0}\", Value = {1} }});", f.Name, JlString.ToLowerFirst(f.Name))));
             });
             return DaoBaseCode(inModel, @"
@@ -248,7 +251,7 @@ namespace {0}
         /// <param name=""connectionString"">连接字符串</param>
         /// <param name=""wherePart"">删除属性</param>
         /// <returns>查询结果</returns>
-        public static En.{4} GetBy{1}(string connectionString, dynamic wherePart) {{
+        public static En.{4} GetBy{6}(string connectionString, dynamic wherePart) {{
             var sql = @""SELECT
 {2}
                 FROM [{0}] WITH (NOLOCK)
@@ -275,14 +278,13 @@ namespace {0}
         }}
 ", tableName, f.Name,
                 field.ToString().Substring(0, field.Length - 3),
-                fieldParameter, className, fieldSetModel));
-                //    }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter));
+                fieldParameter, className, fieldSetModel, JlString.ToUpperFirst(f.Name)));
             });
             return DaoBaseCode(inModel, @"
 
         #region 查询
 
-"+codeStr.ToString()+ @"
+" + codeStr.ToString() + @"
 
 
         #endregion");
@@ -306,9 +308,9 @@ namespace {0}
             {
                 field.AppendLine("            [" + f.Name + "],");
                 if (JlDbTypeMap.Map(f.DbType) == "string")
-                    fieldSetModel.AppendLine(string.Format("                {0} = row[\"{0}\"].ToString(),", f.Name, JlString.ToLowerFirst(className)));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = row[\"{0}\"].ToString(),", f.Name, JlString.ToLowerFirst(className)));
                 else
-                    fieldSetModel.AppendLine(string.Format("                {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(f.DbType))));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(f.DbType))));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
@@ -322,19 +324,19 @@ namespace {0}
             };
 
             var fieldDataAccess = string.Format(@"
-        var list = new List<En.{0}>();
+            var list = new List<En.{0}>();
 
-        var dataTable = new DataTable();
-        JlDatabase.Fill(connectionString, sql, dataTable);
+            var dataTable = new DataTable();
+            JlDatabase.Fill(connectionString, sql, dataTable);
 
-        if (dataTable.Rows.Count > 0)
-        {{
-            list = dataTable.AsEnumerable().Select(row => new En.{0}()
+            if (dataTable.Rows.Count > 0)
             {{
+                list = dataTable.AsEnumerable().Select(row => new En.{0}()
+                {{
 {1}
-            }}).ToList();
-        }}
-        return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 2));
+                }}).ToList();
+            }}
+            return list;", className, fieldSetModel.ToString().Substring(0, fieldSetModel.Length - 2));
 
             codeStr.AppendLine(string.Format(@"
         /// <summary>
@@ -349,14 +351,10 @@ namespace {0}
 
             inModel.FieldDescriptions.ForEach(f =>
             {
-                var fieldParameter = string.Format("        parameters.Add(new SqlParameter() {{ ParameterName = \"{0}\", Value = wherePart.{0} }});", f.Name, JlString.ToLowerFirst(className));
+                var fieldParameter = string.Format("            parameters.Add(new SqlParameter() {{ ParameterName = \"{0}\", Value = wherePart.{0} }});", f.Name, JlString.ToLowerFirst(className));
 
                 var sqlWhere = string.Format("WHERE [{0}] = @{0}", f.Name);
                 codeStr.AppendLine(string.Format(@"
-
-
-        #region 查询
-
 
 
         /// <summary>
@@ -365,20 +363,25 @@ namespace {0}
         /// <param name=""connectionString"">连接字符串</param>
         /// <param name=""wherePart"">查询实体</param>
         /// <returns>查询结果集</returns>
-        public static List<En.{1}> GetListBy{3}(string connectionString, dynamic wherePart) {{
+        public static List<En.{1}> GetListBy{5}(string connectionString, dynamic wherePart) {{
             string sql = {0};
 
             var parameters = new List<SqlParameter>();
 {2}
 {4}
-    }}
-
-        #endregion", getSelectSql(field.ToString(), sqlWhere), className, fieldParameter, f.Name, fieldDataAccess));
+        }}", getSelectSql(field.ToString(), sqlWhere), className, fieldParameter, f.Name, fieldDataAccess, JlString.ToUpperFirst(f.Name)));
 
             });
 
 
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return DaoBaseCode(inModel, @"
+
+        #region 查询
+
+" + codeStr.ToString() + @"
+
+
+        #endregion");
         }
 
         /// <summary>

@@ -37,5 +37,10 @@ namespace CodeTool.Models.CoderMaker
         /// 语言类型
         /// </summary>
         public string Lang { get; set; }
+
+        /// <summary>
+        /// 数据库类型
+        /// </summary>
+        public string DbType { get; set; }
     }
 }

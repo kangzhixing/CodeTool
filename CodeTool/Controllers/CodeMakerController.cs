@@ -11,6 +11,7 @@ using Mo = CodeTool.Models;
 using JasonLib;
 using JasonLib.Web.Mvc;
 using JasonLib.Data;
+using System.Collections.Generic;
 
 namespace CodeTool.Controllers
 {
@@ -54,51 +55,18 @@ namespace CodeTool.Controllers
                 inModel.ConnectionString = HttpUtility.UrlDecode(inModel.ConnectionString);
                 inModel.Package = HttpUtility.UrlDecode(inModel.Package);
                 inModel.Table = HttpUtility.UrlDecode(inModel.Table);
+                inModel.DbType = HttpUtility.UrlDecode(inModel.DbType);
 
-                var sql = @"
-                    WITH T AS
-                    (
-	                    SELECT
-		                    D.name AS TableName,
-		                    A.name AS Name,
-		                    B.name AS DbType,
-		                    COLUMNPROPERTY(A.ID,A.NAME,'PRECISION') AS Length,
-		                    (CASE WHEN A.ISNULLABLE=1 THEN 'true'ELSE 'false' END) AS IsNullable,
-							(CASE WHEN A.COLSTAT=1 THEN 'true'ELSE 'false' END) AS IsIdentity,
-		                    ISNULL(G.[VALUE],'') AS Description,
-                            colorder
-	                    FROM  SYSCOLUMNS  A LEFT JOIN SYSTYPES B
-	                    ON  A.XTYPE=B.XUSERTYPE
-	                    INNER JOIN SYSOBJECTS D
-	                    ON A.ID=D.ID  AND  D.XTYPE IN ('V','U') AND  D.NAME<>'DTPROPERTIES'
-	                    LEFT JOIN SYSCOMMENTS E
-	                    ON A.CDEFAULT=E.ID
-	                    LEFT JOIN SYS.EXTENDED_PROPERTIES G
-	                    ON A.ID=G.MAJOR_ID AND A.COLID = G.MINOR_ID
-                    )
-                    SELECT Name,DbType,Length,IsNullable,IsIdentity,Description FROM T WHERE TableName = '{0}' ORDER BY colorder";
-                sql = string.Format(sql, inModel.Table);
-
-                var dataTable = new DataTable();
-                JlDatabase.Fill(inModel.ConnectionString, sql, dataTable);
-
-                var fieldDescriptions = dataTable.AsEnumerable().Select(row => new JlFieldDescription()
-                {
-                    Name = row.Field<string>("Name"),
-                    DbType = row.Field<string>("DbType"),
-                    Length = row.Field<int>("Length"),
-                    IsNullable = Convert.ToBoolean(row.Field<string>("IsNullable")),
-                    IsIdentity = Convert.ToBoolean(row.Field<string>("IsIdentity")),
-                    Description = HttpUtility.HtmlEncode(row.Field<string>("Description"))
-                }).ToList();
+                var databaseColumns = CommonMethod.GetDatabaseColumns(inModel.ConnectionString, inModel.Table, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), inModel.DbType));
 
                 var outModel = new CodeMakerGeneratCodeOut
                 {
                     CodeMakerGeneratCodeIn = inModel,
-                    FieldDescriptions = fieldDescriptions
+                    FieldDescriptions = databaseColumns
                 };
 
                 #region 通过反射调用方法
+
                 var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass") + "_" + inModel.Lang);
                 //声明创建当前类实例
                 var model = Activator.CreateInstance(type);
@@ -135,25 +103,11 @@ namespace CodeTool.Controllers
                 UpdateModel(inModel);
                 inModel.ConnectionString = HttpUtility.UrlDecode(inModel.ConnectionString);
 
-                #region 参数验证
-                {
-
-                }
-                #endregion
-
-                var sql = @"SELECT name AS Name FROM SYSOBJECTS WHERE XTYPE IN ('V','U') AND NAME<>'DTPROPERTIES' ORDER BY Name ASC";
-
-                var dataTable = new DataTable();
-                JlDatabase.Fill(inModel.ConnectionString, sql, dataTable);
-
-                var fields = dataTable.AsEnumerable().Select(row => new
-                {
-                    Name = row.Field<string>("Name")
-                }).ToList();
+                var databaseTables = CommonMethod.GetDatabaseTables(inModel.ConnectionString, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), inModel.DbType));
 
                 return new JlJsonResult()
                 {
-                    Content = JlJson.ToJson(fields)
+                    Content = JlJson.ToJson(databaseTables)
                 };
             }
             catch (Exception exception)

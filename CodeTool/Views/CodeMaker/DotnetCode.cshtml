@@ -25,33 +25,42 @@
         </div>
         <table style="margin-top: 10px">
             <tr>
+                <td>数据库类型: </td>
+                <td>
+                    <input type="radio" name="dbType" id="cboSqlServer" checked="checked" value="SqlServer" />
+                    <label for="cboSqlServer">Sql Server</label>
+                    <input type="radio" name="dbType" id="cboMySql" value="MySql" />
+                    <label for="cboMySql">MySql</label>
+                </td>
+            </tr>
+            <tr>
                 <td>连接字符串: </td>
                 <td>
-                    <input type="text" id="txtConnectionString" style="width: 586px" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
+                    <input type="text" id="txtConnectionString" style="width: 686px" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>命名空间: </td>
                 <td>
-                    <input type="text" id="txtPackage" style="width: 586px" value="JasonLib.{0}" />
+                    <input type="text" id="txtPackage" style="width: 686px" value="JasonLib.{0}" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>表和视图: </td>
                 <td>
-                    <select id="sltTables" class="w600"></select>
+                    <select id="sltTables" class="w700"></select>
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>类名: </td>
                 <td>
-                    <input type="text" id="txtClassName" class="" style="width: 586px" />
+                    <input type="text" id="txtClassName" class="" style="width: 686px" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>类型: </td>
                 <td>
-                    <select id="sltDataType" class="w600 ">
+                    <select id="sltDataType" class="w700 ">
                         <option value="Entity">Entity</option>
                         <option value="Dao">Dao</option>
                         <option value="DaoAdd">Dao.Add</option>
@@ -83,7 +92,9 @@
     });
 
     function InitCodeTypeSlt() {
-        $.getJSON("/CodeMaker/GetCodeTypeSlt?lang=Dotnet", function (data) {
+        $.getJSON("/CodeMaker/GetCodeTypeSlt", {
+            lang: "Dotnet"
+        }, function (data) {
             $("#sltDataType").html('');
             var html = '';
             for (var i = 0; i < data.length; i++) {
@@ -102,6 +113,7 @@
         var type = $("#sltDataType").val();
         $.getJSON("/CodeMaker/GeneratCode", {
             lang: "Dotnet",
+            DbType: $("input:radio[checked=checked]").val(),
             ConnectionString: encodeURIComponent(connectionString),
             Table: table,
             Package: pkg,
@@ -141,7 +153,8 @@
             dataType: "json",
             data: {
                 ConnectionString: encodeURIComponent(connectionString),
-                Random: new Date()
+                Random: new Date(),
+                DbType: $("input:radio[checked=checked]").val()
             },
             success: function (result) {
                 if (result != null && result.Message != null) {
@@ -155,9 +168,9 @@
                     var html = "";
                     if (result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
-                            html = html + "<option value='" + result[i].Name + "'>" + result[i].Name + "</option>";
+                            html = html + "<option value='" + result[i] + "'>" + result[i] + "</option>";
                         }
-                        $("#txtClassName").val(result[0].Name);
+                        $("#txtClassName").val(result[0]);
                     }
                     tables.html(html);
                 }

@@ -16,8 +16,7 @@ namespace CodeTool.common
             var result = new StringBuilder();
             var getterAndSetter = new StringBuilder();
 
-            result.AppendLine(string.Format(@"
-package {0};
+            result.AppendLine(string.Format(@"package {0};
 
 import java.util.*;
 import java.math.*;
@@ -31,12 +30,12 @@ public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "ent
     private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + f.Name + ";" + (string.IsNullOrWhiteSpace(f.Description) ? "" : " //" + f.Description));
 
                 getterAndSetter.AppendLine(string.Format(@"
-    public {2} get{0}() {{
+    public {2} get{3}() {{
         return {0};
     }}
-    public void set{0}({2} {1}) {{
-        {0} = {1};
-    }}", f.Name, JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
+    public void set{3}({2} {1}) {{
+        this.{0} = {1};
+    }}", f.Name, JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable), JlString.ToUpperFirst(f.Name)));
 
             }
             result.Append(getterAndSetter);
@@ -50,8 +49,7 @@ public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "ent
         {
             var result = new StringBuilder();
 
-            result.AppendLine(string.Format(@"
-package {0};
+            result.AppendLine(string.Format(@"package {0};
 
 import java.io.IOException;
 import java.util.*;
@@ -148,7 +146,7 @@ public class {1}Dao{{
     * 
     * @return 修改成功与否
     */
-    public static boolean UpdateBy{3}(String connectionString, {0} {1}) throws Exception {{
+    public static boolean UpdateBy{6}(String connectionString, {0} {1}) throws Exception {{
         String sql = ""UPDATE [{5}] SET ""
 {2}
         + ""WHERE [{3}] = @{3}"";
@@ -164,7 +162,8 @@ public class {1}Dao{{
                 field.ToString().Substring(0, field.Length - 5) + " \"",
                 f.Name,
                 fieldParameter,
-                tableName));
+                tableName,
+                JlString.ToUpperFirst(f.Name)));
             });
             return DaoBaseCode(inModel, codeStr.ToString());
         }
@@ -190,12 +189,12 @@ public class {1}Dao{{
     * 
     * @return 修改成功与否
     */
-    public static boolean DeleteBy{3}(String connectionString, {0} {1}) throws Exception {{
+    public static boolean DeleteBy{4}(String connectionString, {0} {1}) throws Exception {{
         String sql = ""DELETE FROM [{2}] WHERE [{3}] = @{3}"";
 		
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
-{4}		
+{5}		
         int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
@@ -203,6 +202,7 @@ public class {1}Dao{{
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
+                JlString.ToUpperFirst(f.Name),
                 JlDbTypeMap.Map4J(f.DbType) == "Date"
                         ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}));", f.Name, JlString.ToLowerFirst(f.Name))
                         : string.Format("        parameters.put(\"{0}\", {1});", f.Name, JlString.ToLowerFirst(f.Name))));
@@ -221,8 +221,8 @@ public class {1}Dao{{
             {
                 field.AppendLine("            + \"[" + f.Name + "], \"");
                 fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("            model.set" + f.Name + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
-                    : string.Format("            model.set" + f.Name + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
             });
             inModel.FieldDescriptions.ForEach(f =>
             {
@@ -240,7 +240,7 @@ public class {1}Dao{{
     * 
     * @return 查询结果
     */
-    public static {5} GetBy{1}(String connectionString, {9} {8}) throws Exception {{
+    public static {5} GetBy{10}(String connectionString, {9} {8}) throws Exception {{
         String sql = ""SELECT ""
 {2}
             + ""FROM [{0}] WITH (NOLOCK) ""
@@ -265,7 +265,8 @@ public class {1}Dao{{
                 JlString.ToLowerFirst(className),
                 fieldSetModel,
                 JlString.ToLowerFirst(f.Name),
-                JlDbTypeMap.Map4J(f.DbType)));
+                JlDbTypeMap.Map4J(f.DbType),
+                JlString.ToUpperFirst(f.Name)));
             });
 
             return DaoBaseCode(inModel, codeStr.ToString());
@@ -289,8 +290,8 @@ public class {1}Dao{{
             {
                 field.AppendLine("            \"[" + f.Name + "], \" +");
                 fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("            model.set" + f.Name + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
-                    : string.Format("            model.set" + f.Name + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
@@ -322,7 +323,7 @@ public class {1}Dao{{
     * 
     * @param connectionString 连接字符串
     * 
-    * @return 查询结果
+    * @return 查询结果集
     */
     public static List<{1}> GetAll(String connectionString) throws Exception {{
         String sql = {0};
@@ -333,8 +334,8 @@ public class {1}Dao{{
             inModel.FieldDescriptions.ForEach(f =>
             {
                 var fieldParameter = JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("        parameters.put(\"{0}\", new java.sql.Date(wherePart.get{0}().getTime()));", f.Name, JlString.ToLowerFirst(className))
-                    : string.Format("        parameters.put(\"{0}\", wherePart.get{0}());", f.Name, JlString.ToLowerFirst(className));
+                    ? string.Format("        parameters.put(\"{0}\", new java.sql.Date(wherePart.get{1}().getTime()));", f.Name, JlString.ToUpperFirst(f.Name))
+                    : string.Format("        parameters.put(\"{0}\", wherePart.get{1}());", f.Name, JlString.ToUpperFirst(f.Name));
 
                 var sqlWhere = string.Format("WHERE [{0}] = @{0}", f.Name);
                 codeStr.AppendLine(string.Format(@"
@@ -346,13 +347,13 @@ public class {1}Dao{{
     * 
     * @return 查询结果集
     */
-    public static List<{1}> GetListBy{3}(String connectionString, {1} wherePart) throws Exception {{
+    public static List<{1}> GetListBy{5}(String connectionString, {1} wherePart) throws Exception {{
         String sql = {0};
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 {2}
 {4}
-    }}", getSelectSql(field.ToString(), sqlWhere), className, fieldParameter, f.Name, fieldDataAccess));
+    }}", getSelectSql(field.ToString(), sqlWhere), className, fieldParameter, f.Name, fieldDataAccess, JlString.ToUpperFirst(f.Name)));
 
             });
 
@@ -378,8 +379,8 @@ public class {1}Dao{{
             {
                 field.AppendLine("                \"[" + f.Name + "], \" +");
                 fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("            model.set" + f.Name + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
-                    : string.Format("            model.set" + f.Name + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
