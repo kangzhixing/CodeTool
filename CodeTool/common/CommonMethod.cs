@@ -158,7 +158,7 @@ namespace CodeTool.common
         {
             var dbName = connectionString.Split(new[] { "database=" }, StringSplitOptions.RemoveEmptyEntries)[1].Split(';')[0];
             var sql = @"
-                    SELECT COLUMN_NAME Name, COLUMN_COMMENT Description, DATA_TYPE DbType, IS_NULLABLE IsNullable, CHARACTER_MAXIMUM_LENGTH Length, Extra 
+                    SELECT COLUMN_NAME Name, COLUMN_COMMENT Description, DATA_TYPE DbType, IS_NULLABLE IsNullable, CHARACTER_MAXIMUM_LENGTH Length, Extra, COLUMN_KEY
                     FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '" + dbName + "' AND TABLE_NAME like '{0}'";
             sql = string.Format(sql, tableName);
 
@@ -172,6 +172,7 @@ namespace CodeTool.common
                 Length = JlConvert.TryToInt(row["Length"]),
                 IsNullable = JlConvert.TryToBoolean(row["IsNullable"].ToString().ToLower() == "yes"),
                 IsIdentity = JlConvert.TryToBoolean(row["Extra"].ToString().Contains("auto_increment")),
+                ColumnKey = row["COLUMN_KEY"].ToString(),
                 Description = HttpUtility.HtmlEncode(row["Description"].ToString())
             }).ToList();
         }

@@ -67,6 +67,52 @@ namespace {0}
 
         public string RefDaoAdd(CodeMakerGeneratCodeOut inModel)
         {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoAdd(inModel));
+        }
+
+        public string RefDaoUpdate(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoUpdate(inModel));
+        }
+
+        public string RefDaoDelete(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoDelete(inModel));
+
+        }
+
+        public string RefDaoGet(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoGet(inModel));
+        }
+
+        public string RefDaoGetList(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoGetList(inModel));
+        }
+
+        public string RefDaoGetPageList(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoGetPageList(inModel));
+        }
+
+        public string RefDaoAll(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_DotNet.DaoAdd(inModel)
+                + GenerateCode_DotNet.DaoUpdate(inModel)
+                + GenerateCode_DotNet.DaoDelete(inModel)
+                + GenerateCode_DotNet.DaoGet(inModel)
+                + GenerateCode_DotNet.DaoGetList(inModel)
+                + GenerateCode_DotNet.DaoGetPageList(inModel)); 
+        }
+
+        #endregion
+    }
+
+    public class GenerateCode_DotNet
+    {
+        public static string DaoAdd(CodeMakerGeneratCodeOut inModel)
+        {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
             var field = new StringBuilder();
@@ -81,7 +127,6 @@ namespace {0}
 
 
             var codeStr = string.Format(@"
-
 
         /// <summary>
         /// 添加实体
@@ -103,22 +148,18 @@ namespace {0}
             return i > 0;
         }}", className, tableName, field.ToString().Substring(0, field.Length - 3), fieldValue.ToString().Substring(0, fieldValue.Length - 3), fieldParameter);
 
-            return DaoBaseCode(inModel, @"
+            return @"
 
         #region 添加
 
 " + codeStr.ToString() + @"
 
 
-        #endregion");
+        #endregion";
+
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="inModel"></param>
-        /// <returns></returns>
-        public string RefDaoUpdate(CodeMakerGeneratCodeOut inModel)
+        public static string DaoUpdate(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -137,7 +178,6 @@ namespace {0}
                 });
 
                 codeStr.AppendLine(string.Format(@"
-
 
         /// <summary>
         /// 修改实体
@@ -164,17 +204,17 @@ namespace {0}
                 tableName,
                 JlString.ToUpperFirst(f.Name)));
             });
-            return DaoBaseCode(inModel, @"
+            return @"
 
         #region 修改
 
 " + codeStr.ToString() + @"
 
 
-        #endregion");
+        #endregion";
         }
 
-        public string RefDaoDelete(CodeMakerGeneratCodeOut inModel)
+        public static string DaoDelete(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -187,8 +227,6 @@ namespace {0}
                 fieldParameter.AppendLine();
 
                 codeStr.AppendLine(string.Format(@"
-
-
 
         /// <summary>
         /// 通过{3}删除实体
@@ -212,17 +250,17 @@ namespace {0}
                 JlString.ToUpperFirst(f.Name),
                 string.Format("        parameters.Add(new SqlParameter() {{ ParameterName = \"{0}\", Value = {1} }});", f.Name, JlString.ToLowerFirst(f.Name))));
             });
-            return DaoBaseCode(inModel, @"
+            return @"
 
         #region 删除
 
 " + codeStr.ToString() + @"
 
 
-        #endregion");
+        #endregion";
         }
 
-        public string RefDaoGet(CodeMakerGeneratCodeOut inModel)
+        public static string DaoGet(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -280,23 +318,19 @@ namespace {0}
                 field.ToString().Substring(0, field.Length - 3),
                 fieldParameter, className, fieldSetModel, JlString.ToUpperFirst(f.Name)));
             });
-            return DaoBaseCode(inModel, @"
+            return @"
 
         #region 查询
 
 " + codeStr.ToString() + @"
 
 
-        #endregion");
+        #endregion";
         }
 
-        /// <summary>
-        /// RefDaoGetList
-        /// </summary>
-        /// <param name="inModel"></param>
-        /// <returns></returns>
-        public string RefDaoGetList(CodeMakerGeneratCodeOut inModel)
+        public static string DaoGetList(CodeMakerGeneratCodeOut inModel)
         {
+
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
             var codeStr = new StringBuilder();
@@ -356,7 +390,6 @@ namespace {0}
                 var sqlWhere = string.Format("WHERE [{0}] = @{0}", f.Name);
                 codeStr.AppendLine(string.Format(@"
 
-
         /// <summary>
         /// 查询实体列表（不存在时，返回null）
         /// </summary>
@@ -374,22 +407,17 @@ namespace {0}
             });
 
 
-            return DaoBaseCode(inModel, @"
+            return @"
 
         #region 查询
 
 " + codeStr.ToString() + @"
 
 
-        #endregion");
+        #endregion";
         }
 
-        /// <summary>
-        /// RefDaoGetPageList
-        /// </summary>
-        /// <param name="inModel"></param>
-        /// <returns></returns>
-        public string RefDaoGetPageList(CodeMakerGeneratCodeOut inModel)
+        public static string DaoGetPageList(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -443,7 +471,8 @@ namespace {0}
             JlDatabase.Fill(connectionString, sql, dataTable, parameters.ToArray());
 
             //记录总数计算
-            var sqlCount = string.Format(""SELECT COUNT(*) CNT FROM [{2}] {{0}} "", string.IsNullOrEmpty(sqlWhere) ? """" : "" WHERE("" + sqlWhere.Remove(sqlWhere.Length - 4) + "")"");
+            var sqlCount = string.Format(""SELECT COUNT(*) CNT FROM [{2}] {{0}} "", string.IsNullOrEmpty(sqlWhere) ? """"
+                : "" WHERE("" + sqlWhere.Remove(sqlWhere.Length - 4) + "")"");
             totalCount = SlConvert.TryToInt32(JlDatabase.ExecuteScalar(connectionString, sqlCount));
 
             if (dataTable.Rows.Count > 0)
@@ -457,9 +486,7 @@ namespace {0}
 
             codeStr.AppendLine(string.Format(@"
 
-
-        #region 查询
-
+        #region 查询结果集
 
 
         /// <summary>
@@ -511,9 +538,9 @@ namespace {0}
         #endregion
 ", getSelectSql(field.ToString(), null), className, fieldDataAccess_Count));
 
-            return DaoBaseCode(inModel, codeStr.ToString());
-        }
+            return codeStr.ToString();
 
-        #endregion
+        }
     }
+
 }
