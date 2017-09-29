@@ -23,19 +23,18 @@ import java.math.*;
 
 public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), inModel.CodeMakerGeneratCodeIn.ClassName));
 
-
             foreach (var f in inModel.FieldDescriptions)
             {
                 result.AppendLine(@"
-    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + f.Name + ";" + (string.IsNullOrWhiteSpace(f.Description) ? "" : " //" + f.Description));
+    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + JlString.ToLowerFirst(f.Name) + ";" + (string.IsNullOrWhiteSpace(f.Description) ? "" : " //" + f.Description));
 
                 getterAndSetter.AppendLine(string.Format(@"
-    public {2} get{3}() {{
+    public {2} get{1}() {{
         return {0};
     }}
-    public void set{3}({2} {1}) {{
-        this.{0} = {1};
-    }}", f.Name, JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable), JlString.ToUpperFirst(f.Name)));
+    public void set{1}({2} {0}) {{
+        this.{0} = {0};
+    }}", JlString.ToLowerFirst(f.Name), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
 
             }
             result.Append(getterAndSetter);
@@ -76,6 +75,145 @@ public class {1}Dao{{
 
         public string RefDaoAdd(CodeMakerGeneratCodeOut inModel)
         {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoAdd(inModel));
+        }
+
+        public string RefDaoUpdate(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoUpdate(inModel));
+        }
+
+        public string RefDaoDelete(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoDelete(inModel));
+        }
+
+        public string RefDaoGet(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoGet(inModel));
+        }
+
+        public string RefDaoGetList(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoGetList(inModel));
+        }
+
+        public string RefDaoGetPageList(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoGetPageList(inModel));
+        }
+
+        public string RefDaoAll(CodeMakerGeneratCodeOut inModel)
+        {
+            return DaoBaseCode(inModel, GenerateCode_Java.DaoAdd(inModel)
+                + GenerateCode_Java.DaoUpdate(inModel)
+                + GenerateCode_Java.DaoDelete(inModel)
+                + GenerateCode_Java.DaoGet(inModel)
+                + GenerateCode_Java.DaoGetList(inModel)
+                + GenerateCode_Java.DaoGetPageList(inModel));
+        }
+
+        public string RefMybatisMapper(CodeMakerGeneratCodeOut inModel)
+        {
+            var className = inModel.CodeMakerGeneratCodeIn.ClassName;
+            var tableName = inModel.CodeMakerGeneratCodeIn.Table;
+            var field_Basic = new StringBuilder();
+            var field_Add = new StringBuilder();
+            var fieldValue = new StringBuilder();
+            var fieldParams = new StringBuilder();
+            var field_SqlContent = new StringBuilder();
+            var field = new JlFieldDescription();
+            if (inModel.FieldDescriptions.Count(f => f.ColumnKey == "PRI") == 1)
+            {
+                field = inModel.FieldDescriptions.First(f => f.ColumnKey == "PRI");
+            }
+            else
+            {
+                field = inModel.FieldDescriptions.FirstOrDefault();
+            }
+            var codeStr = new StringBuilder();
+            codeStr.AppendLine(string.Format(
+@"package {0};
+
+import {1};
+import java.util.List;
+
+public interface {2}Mapper{{
+
+    {7}By{3}({4} {5});
+
+    int deleteBy{3}({4} {5});
+
+    int updateBy{3}({2} {6});
+
+    int updateBy{3}Selective({2} {6});
+
+    int insert({2} {6});
+    
+}}",
+            string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao"),
+            string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
+            className,
+            JlString.ToUpperFirst(field.Name),
+            JlDbTypeMap.Map4J(field.DbType),
+            JlString.ToLowerFirst(field.Name),
+            JlString.ToLowerFirst(className),
+            !string.IsNullOrEmpty(field.ColumnKey) ? className + " select" : "List<"+className + "> select"));
+
+            return codeStr.ToString();
+        }
+
+        public string RefMybatisMapperXml(CodeMakerGeneratCodeOut inModel)
+        {
+            var className = inModel.CodeMakerGeneratCodeIn.ClassName;
+            var tableName = inModel.CodeMakerGeneratCodeIn.Table;
+            var field_Basic = new StringBuilder();
+            var field_Add = new StringBuilder();
+            var fieldValue = new StringBuilder();
+            var fieldParams = new StringBuilder();
+            var field_SqlContent = new StringBuilder();
+
+            var codeStr = new StringBuilder();
+            codeStr.AppendLine(
+@"<!DOCTYPE mapper PUBLIC "" -//mybatis.org//DTD Mapper 3.0//EN"" ""http://mybatis.org/dtd/mybatis-3-mapper.dtd"">
+<mapper namespace=""" + string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao.") + className + "Mapper\">");
+
+            inModel.FieldDescriptions.ToList().ForEach(f =>
+            {
+                field_Basic.AppendLine(string.Format("    <{0} column=\"" + JlString.ToUpperFirst(f.Name) + "\" jdbcType=\"" + JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper() + "\" property=\"" + f.Name.ToLower() + "\" />",
+                    !string.IsNullOrEmpty(f.ColumnKey) ? "id" : "result"));
+
+                fieldParams.Append(f.Name + ", ");
+                if (fieldParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
+                {
+                    fieldParams.Append("\r\n    ");
+                }
+            });
+
+            field_SqlContent.Append(GenerateCode_Java.MybatisSelect(inModel));
+            field_SqlContent.Append(GenerateCode_Java.MybatisDelete(inModel));
+            field_SqlContent.Append(GenerateCode_Java.MybatisInsert(inModel));
+            field_SqlContent.Append(GenerateCode_Java.MybatisUpdate(inModel));
+
+            codeStr.AppendLine(string.Format(
+@"  <resultMap id=""BaseResultMap"" type=""{0}"">
+{1}  </resultMap>
+  <sql id=""Base_Column_List"">
+    {2}
+  </sql>
+{3}</mapper>", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className, field_Basic, fieldParams.ToString().Substring(0, fieldParams.Length - 2), field_SqlContent));
+
+            return codeStr.ToString();
+        }
+
+        #endregion
+    }
+
+    public class GenerateCode_Java
+    {
+
+        public static string DaoAdd(CodeMakerGeneratCodeOut inModel)
+        {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
             var field = new StringBuilder();
@@ -83,7 +221,7 @@ public class {1}Dao{{
             var fieldParameter = new StringBuilder();
             inModel.FieldDescriptions.Where(f => !f.IsIdentity).ToList().ForEach(f =>
             {
-                field.AppendLine("            + \"[" + f.Name + "], \"");
+                field.AppendLine(" + \"[" + f.Name + "], \"");
                 fieldValue.AppendLine("            + \"@" + f.Name + ", \"");
                 if (JlDbTypeMap.Map4J(f.DbType) == "Date")
                     fieldParameter.AppendLine(string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.get{0}().getTime()));", f.Name, JlString.ToLowerFirst(className)));
@@ -114,10 +252,11 @@ public class {1}Dao{{
 		
         return i > 0;
     }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 5) + "\"", fieldValue.ToString().Substring(0, fieldValue.Length - 5), fieldParameter, tableName);
-            return DaoBaseCode(inModel, codeStr);
+
+            return codeStr.ToString();
         }
 
-        public string RefDaoUpdate(CodeMakerGeneratCodeOut inModel)
+        public static string DaoUpdate(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -165,10 +304,10 @@ public class {1}Dao{{
                 tableName,
                 JlString.ToUpperFirst(f.Name)));
             });
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return codeStr.ToString();
         }
 
-        public string RefDaoDelete(CodeMakerGeneratCodeOut inModel)
+        public static string DaoDelete(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -177,8 +316,8 @@ public class {1}Dao{{
             {
                 var field = new StringBuilder();
                 var fieldParameter = new StringBuilder();
-                
-                    fieldParameter.AppendLine();
+
+                fieldParameter.AppendLine();
 
                 codeStr.AppendLine(string.Format(@"
     /**
@@ -207,10 +346,10 @@ public class {1}Dao{{
                         ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}));", f.Name, JlString.ToLowerFirst(f.Name))
                         : string.Format("        parameters.put(\"{0}\", {1});", f.Name, JlString.ToLowerFirst(f.Name))));
             });
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return codeStr.ToString();
         }
 
-        public string RefDaoGet(CodeMakerGeneratCodeOut inModel)
+        public static string DaoGet(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -269,15 +408,10 @@ public class {1}Dao{{
                 JlString.ToUpperFirst(f.Name)));
             });
 
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return codeStr.ToString();
         }
 
-        /// <summary>
-        /// RefDaoGetList
-        /// </summary>
-        /// <param name="inModel"></param>
-        /// <returns></returns>
-        public string RefDaoGetList(CodeMakerGeneratCodeOut inModel)
+        public static string DaoGetList(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -358,15 +492,10 @@ public class {1}Dao{{
             });
 
 
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return codeStr.ToString();
         }
 
-        /// <summary>
-        /// RefDaoGetPageList
-        /// </summary>
-        /// <param name="inModel"></param>
-        /// <returns></returns>
-        public string RefDaoGetPageList(CodeMakerGeneratCodeOut inModel)
+        public static string DaoGetPageList(CodeMakerGeneratCodeOut inModel)
         {
             var className = inModel.CodeMakerGeneratCodeIn.ClassName;
             var tableName = inModel.CodeMakerGeneratCodeIn.Table;
@@ -434,10 +563,153 @@ public class {1}Dao{{
 {2}
     }}", getSelectSql(field.ToString(), null), className, fieldDataAccess));
 
-
-            return DaoBaseCode(inModel, codeStr.ToString());
+            return codeStr.ToString();
         }
 
-        #endregion
+        public static string MybatisSelect(CodeMakerGeneratCodeOut inModel)
+        {
+            var tableName = inModel.CodeMakerGeneratCodeIn.Table;
+            var result = new StringBuilder();
+
+            if (inModel.FieldDescriptions.Any())
+            {
+                var field = new JlFieldDescription();
+                if (inModel.FieldDescriptions.Count(f => f.ColumnKey == "PRI") == 1)
+                {
+                    field = inModel.FieldDescriptions.First(f => f.ColumnKey == "PRI");
+                }
+                else
+                {
+                    field = inModel.FieldDescriptions.FirstOrDefault();
+                }
+
+                result.AppendLine(string.Format(
+   @"  <select id=""selectBy{1}"" parameterType=""{4}"" resultMap=""BaseResultMap"">
+    select
+    <include refid=""Base_Column_List"" />
+    from {0}
+    where {5} = #{{{2},jdbcType={3}}}
+  </select>", tableName, JlString.ToUpperFirst(field.Name), field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name));
+            }
+            return result.ToString();
+        }
+
+        public static string MybatisUpdate(CodeMakerGeneratCodeOut inModel)
+        {
+            var className = inModel.CodeMakerGeneratCodeIn.ClassName;
+            var tableName = inModel.CodeMakerGeneratCodeIn.Table;
+            var result = new StringBuilder();
+            var field_UpdateParams = new StringBuilder();
+            var field_UpdateParamsSelective = new StringBuilder();
+
+            if (!inModel.FieldDescriptions.Any())
+            {
+                return string.Empty;
+            }
+            inModel.FieldDescriptions.Where(f => f.ColumnKey != "PRI").ToList().ForEach(f =>
+            {
+                field_UpdateParams.Append(string.Format("{2} = #{{{0},jdbcType={1}}}, ", f.Name.ToLower(), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper(), f.Name));
+                if (field_UpdateParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
+                {
+                    field_UpdateParams.Append("\r\n        ");
+                }
+
+                field_UpdateParamsSelective.AppendLine(string.Format(
+@"      <if test=""{0} != null"">
+        {1} = #{{{0},jdbcType={2}}},
+      </if>", f.Name.ToLower(), f.Name, JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
+            });
+
+            var field = new JlFieldDescription();
+            if (inModel.FieldDescriptions.Count(f => f.ColumnKey == "PRI") == 1)
+            {
+                field = inModel.FieldDescriptions.First(f => f.ColumnKey == "PRI");
+            }
+            else
+            {
+                field = inModel.FieldDescriptions.FirstOrDefault();
+            }
+
+            result.AppendLine(string.Format(
+@"  <update id=""updateBy{7}"" parameterType=""{4}"">
+    update {0}
+    set {6}
+    where {1} = #{{{2},jdbcType={3}}}
+  </update>
+  <update id=""updateBy{7}Selective"" parameterType=""{4}"">
+    update {0}
+    <set>
+{5}    </set>
+    where {1} = #{{{2},jdbcType={3}}}
+  </update>", tableName, field.Name, field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
+                field_UpdateParamsSelective, field_UpdateParams.ToString().TrimEnd().Substring(0, field_UpdateParams.ToString().TrimEnd().Length - 1), JlString.ToUpperFirst(field.Name)));
+            return result.ToString();
+        }
+
+        public static string MybatisInsert(CodeMakerGeneratCodeOut inModel)
+        {
+            var className = inModel.CodeMakerGeneratCodeIn.ClassName;
+            var tableName = inModel.CodeMakerGeneratCodeIn.Table;
+            var result = new StringBuilder();
+            var field_Params = new StringBuilder();
+            var field_InsertParams = new StringBuilder();
+
+            if (!inModel.FieldDescriptions.Any())
+            {
+                return string.Empty;
+            }
+            inModel.FieldDescriptions.Where(f => !f.IsIdentity).ToList().ForEach(f =>
+            {
+                field_Params.Append(f.Name + ", ");
+                if (field_Params.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
+                {
+                    field_Params.Append("\r\n    ");
+                }
+
+                field_InsertParams.Append(string.Format("#{{{0},jdbcType={1}}}, ", f.Name.ToLower(), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
+                if (field_InsertParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
+                {
+                    field_InsertParams.Append("\r\n    ");
+                }
+            });
+
+            result.AppendLine(string.Format(
+@"  <insert id=""insert"" parameterType=""{3}"">
+    insert into {0}(
+    {1}
+    ) values (
+    {2})
+  </insert>", tableName, field_Params.ToString().Substring(0, field_Params.Length - 2), field_InsertParams.ToString().TrimEnd().Substring(0, field_InsertParams.ToString().TrimEnd().Length - 1), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className));
+            return result.ToString();
+        }
+
+        public static string MybatisDelete(CodeMakerGeneratCodeOut inModel)
+        {
+            var tableName = inModel.CodeMakerGeneratCodeIn.Table;
+            var result = new StringBuilder();
+
+            if (!inModel.FieldDescriptions.Any())
+            {
+                return string.Empty;
+            }
+            var field = new JlFieldDescription();
+            if (inModel.FieldDescriptions.Count(f => f.ColumnKey == "PRI") == 1)
+            {
+                field = inModel.FieldDescriptions.First(f => f.ColumnKey == "PRI");
+            }
+            else
+            {
+                field = inModel.FieldDescriptions.FirstOrDefault();
+            }
+
+            result.AppendLine(string.Format(
+@"  <delete id=""deleteBy{1}"" parameterType=""{4}"">
+    delete from {0}
+    where {5} = #{{{2},jdbcType={3}}}
+  </delete>", tableName, JlString.ToUpperFirst(field.Name), field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name));
+
+            return result.ToString();
+        }
+
     }
 }
