@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "文字朗读";
+}
+
+<style type="text/css">
+    .divInput {
+        box-shadow: 0 0 10px grey;
+        display: block;
+        padding: 10px 20px;
+    }
+
+    input {
+        outline: none;
+    }
+
+    textarea {
+        resize: none;
+        outline: none;
+        width: 100%;
+        border: none;
+    }
+</style>
+<div class="divPage">
+    <div class="divTitleText"></div>
+    <div>
+        <p>
+            人声:
+            <select id="sltPer" style="height:36px;position:relative;top:-2px">
+                <option value="0">女声</option>
+                <option value="1">男声</option>
+                <option value="3">逍遥</option>
+                <option value="4">丫丫</option>
+            </select>
+            <input type="button" class="jk-button" id="btnPlay" value="播放" />
+            <audio id="adoPlayer" autoplay="autoplay" preload="metadata"></audio>
+        </p>
+        <div class="divInput">
+            <textarea id="txtContent" rows="25"></textarea>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $("#btnPlay").bind("click", function (e) {
+        $.getJSON("/Tool/GetAudio", {
+            tex: encodeURI($("#txtContent").val()),
+            per: $("#sltPer").find("option:selected").val()
+        }, function (data) {
+            if (data != null && data.Message != null) {
+                alert(data.Message);
+            }
+            else {
+                $("#adoPlayer").attr("src", "..\\" + data);
+            }
+        });
+    });
+
+
+</script>

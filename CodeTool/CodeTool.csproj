@@ -43,11 +43,19 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AipSdk, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dll\AipSdk.dll</HintPath>
+    </Reference>
     <Reference Include="JasonLib">
       <HintPath>Dll\JasonLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -75,9 +83,6 @@
     <Reference Include="Microsoft.Web.Mvc.FixedDisplayModes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.Mvc.FixedDisplayModes.1.0.0\lib\net40\Microsoft.Web.Mvc.FixedDisplayModes.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
     </Reference>
@@ -137,6 +142,7 @@
     <Compile Include="common\CommonMethod.cs" />
     <Compile Include="common\ReflectMethod_Dotnet.cs" />
     <Compile Include="common\ReflectMethod_Java.cs" />
+    <Compile Include="common\Speech.cs" />
     <Compile Include="common\ViewPageAttribute.cs" />
     <Compile Include="Controllers\ToolController.cs" />
     <Compile Include="Controllers\MainController.cs" />
@@ -212,6 +218,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\base.css" />
+    <Content Include="Dll\AipSdk.dll" />
     <Content Include="Dll\JasonLib.dll" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -239,7 +246,9 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Scripts\kzx.js" />
     <Content Include="Scripts\common.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -263,6 +272,7 @@
     <Content Include="Views\Tool\Color.cshtml" />
     <Content Include="Views\Tool\Encode.cshtml" />
     <Content Include="Views\CodeMaker\DotnetCode.cshtml" />
+    <Content Include="Views\Tool\Speech.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -10,13 +10,13 @@ using CodeTool.common;
 using JasonLib.Web.Mvc;
 using JasonLib.Web;
 using System.Text;
+using System.IO;
+using JasonLib;
 
 namespace CodeTool.Controllers
 {
     public class ToolController : BaseController
     {
-        //
-        // GET: /Default/
 
         [ViewPage]
         [Description("MD5编码")]
@@ -84,6 +84,25 @@ namespace CodeTool.Controllers
                     Content = JlJson.ToJson(new { Message = ex.Message })
                 };
             }
+        }
+
+        [ViewPage]
+        [Description("文字朗读")]
+        public ActionResult Speech()
+        {
+            return View();
+        }
+
+        public ActionResult GetAudio(string tex, int per)
+        {
+            var speech = new Speech();
+
+            var fileName = speech.Tts(HttpUtility.UrlDecode(tex), per);
+
+            return new JlJsonResult()
+            {
+                Content = JlJson.ToJson(JlConfig.GetValue<string>("SaveFilePath") + fileName)
+            };
         }
 
 
