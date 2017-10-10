@@ -29,7 +29,13 @@ namespace CodeTool.common
         public string Tts(string tex, int per = 0, int spd = 5, int vol = 7)
         {
             var fileName = JlMd5.HashPassword(tex + "|per|" + per + "|spd|" + spd + "|vol|" + vol) + ".mp3";
-            var fullName = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + JlConfig.GetValue<string>("SaveFilePath") + fileName;
+            var pathName = JlConfig.GetValue<string>("SaveFilePath");
+            var fullName = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pathName + fileName;
+
+            if (!Directory.Exists(AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pathName))
+            {
+                Directory.CreateDirectory(AppDomain.CurrentDomain.SetupInformation.ApplicationBase + pathName);
+            }
 
             if (!File.Exists(fullName))
             {
