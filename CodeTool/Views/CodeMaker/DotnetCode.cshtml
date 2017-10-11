@@ -7,10 +7,6 @@
         display: none;
     }
 
-    .divCondition {
-        margin-bottom: 10px;
-    }
-
     .divContent {
         box-shadow: 0 0 10px grey;
         padding: 20px;
@@ -23,9 +19,9 @@
             <button id="btnConnect" class="jk-button mr15">连接</button>
             <button id="btnGenerat" class="jk-button-disabled" disabled="disabled">生成</button>
         </div>
-        <table style="margin-top: 10px">
+        <table style="margin-top: 10px;width:100%">
             <tr>
-                <td>数据库类型: </td>
+                <td width="80px">数据库类型: </td>
                 <td>
                     <input type="radio" name="dbType" id="cboSqlServer" checked="checked" value="SqlServer" />
                     <label for="cboSqlServer">Sql Server</label>
@@ -36,32 +32,31 @@
             <tr>
                 <td>连接字符串: </td>
                 <td>
-                    <input type="text" id="txtConnectionString" style="width: 686px" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
+                    <input type="text" id="txtConnectionString" style="max-width: 686px;width: 100%" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>命名空间: </td>
                 <td>
-                    <input type="text" id="txtPackage" style="width: 686px" value="JasonLib.{0}" />
+                    <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="JasonLib.{0}" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>表和视图: </td>
                 <td>
-                    <select id="sltTables" class="w700"></select>
+                    <select id="sltTables" style="max-width:700px;width:100%"></select>
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>类名: </td>
                 <td>
-                    <input type="text" id="txtClassName" class="" style="width: 686px" />
+                    <input type="text" id="txtClassName" class="" style="max-width: 686px;width: 100%" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>类型: </td>
                 <td>
-                    <select id="sltDataType" class="w700 ">
-                    </select>
+                    <select id="sltDataType" style="max-width:700px;width:100%"></select>
                 </td>
             </tr>
         </table>
@@ -74,6 +69,20 @@
         InitCodeTypeSlt();
     });
 
+    $("input:radio").bind("change", function () {
+        var connectionString = $("#txtConnectionString").val();
+
+        if (this.value == 'SqlServer') {
+            if (connectionString.indexOf("port=") > 0) {
+                $("#txtConnectionString").val(connectionString.replaceAll("port=xxxx", ""));
+            }
+        } else {
+            if (connectionString.indexOf("port=") < 0) {
+                $("#txtConnectionString").val(connectionString + "port=xxxx");
+            }
+        }
+    });
+
     function InitCodeTypeSlt() {
         $.getJSON("/CodeMaker/GetCodeTypeSlt", {
             lang: "Dotnet"
@@ -81,7 +90,7 @@
             $("#sltDataType").html('');
             var html = '';
             for (var i = 0; i < data.length; i++) {
-                html += "<option value='" + data[i] + "'>" + data[i].replaceAll("Ref","") + "</option>";
+                html += "<option value='" + data[i] + "'>" + data[i].replaceAll("Ref", "") + "</option>";
             }
             $("#sltDataType").html(html);
         });
@@ -114,7 +123,7 @@
         });
     });
 
-    $("#divCode").bind("mouseover",function () {
+    $("#divCode").bind("mouseover", function () {
         SelectText("divCode");
     });
 

@@ -172,9 +172,9 @@
         width: 10px;
     }
 </style>
-<canvas width="800" height="400" id="canvas"><p class="nope">No canvas, no particles</p></canvas>
+<canvas style="width:100%" height="400" id="canvas"><p class="nope">No canvas, no particles</p></canvas>
 <header>
-    <h1>Particle Clock</h1>
+    @*<h1>Particle Clock</h1>*@
     <div id="about">
         <a href="#" id="toggle-options"></a>
         <ul id="options">
@@ -528,7 +528,7 @@
                     valentineifyBtn = document.getElementById('valentineify'),
                     colorBtn = document.getElementById('color');
 
-                toggleOptions.innerHTML = offMsg;
+                //toggleOptions.innerHTML = offMsg;
 
                 /**
                  * Events

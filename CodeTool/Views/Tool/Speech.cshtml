@@ -4,12 +4,6 @@
 }
 
 <style type="text/css">
-    .divInput {
-        box-shadow: 0 0 10px grey;
-        display: block;
-        padding: 10px 20px;
-    }
-
     input {
         outline: none;
     }
@@ -32,7 +26,7 @@
                 <option value="3">逍遥</option>
                 <option value="4">丫丫</option>
             </select>
-            <input type="button" class="jk-button" id="btnPlay" value="播放" />
+            <button id="btnPlay" class="jk-button">播放</button>
             <audio id="adoPlayer" autoplay="autoplay" preload="metadata"></audio>
         </p>
         <div class="divInput">
@@ -42,9 +36,18 @@
 </div>
 <script type="text/javascript">
 
+    var playTime = 0;
     $("#btnPlay").bind("click", function (e) {
+        if (playTime++ == 0) { // 解决Safari不自动播放
+            $("#adoPlayer")[0].play();
+        }
+        var text = encodeURI($("#txtContent").val());
+        if ($("#txtContent").val().trim().length == 0) {
+            text = '我的大脑一片空白，不知道要说些什么';
+        }
+
         $.getJSON("/Tool/GetAudio", {
-            tex: encodeURI($("#txtContent").val()),
+            tex: text,
             per: $("#sltPer").find("option:selected").val()
         }, function (data) {
             if (data != null && data.Message != null) {
@@ -52,9 +55,9 @@
             }
             else {
                 $("#adoPlayer").attr("src", "..\\" + data);
+                $("#adoPlayer")[0].play();
             }
         });
     });
-
 
 </script>

@@ -4,12 +4,6 @@
 }
 
 <style type="text/css">
-    .divInput {
-        box-shadow: 0 0 10px grey;
-        display: block;
-        padding: 10px 20px;
-    }
-
     input {
         outline: none;
     }
@@ -32,8 +26,8 @@
                 <option>Unicode</option>
                 <option>Gb2312</option>
             </select>
-            <input type="button" class="jk-button" id="btnEncode" value="编码" />
-            <input type="button" class="jk-button" id="btnDecode" value="解码" />
+            <button class="jk-button" id="btnEncode">编码</button>
+            <button class="jk-button" id="btnDecode">解码</button>
         </p>
         <div class="divInput" id="divInputHex">
             <textarea id="txtDecode" rows="8"></textarea>

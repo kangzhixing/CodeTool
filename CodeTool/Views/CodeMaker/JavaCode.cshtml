@@ -19,9 +19,9 @@
             <button id="btnConnect" class="jk-button mr15">连接</button>
             <button id="btnGenerat" class="jk-button-disabled" disabled="disabled">生成</button>
         </div>
-        <table style="margin-top: 10px">
+        <table style="margin-top: 10px;width:100%">
             <tr>
-                <td>数据库类型: </td>
+                <td width="80px">数据库类型: </td>
                 <td>
                     <input type="radio" name="dbType" id="cboSqlServer" checked="checked" value="SqlServer" />
                     <label for="cboSqlServer">Sql Server</label>
@@ -32,31 +32,31 @@
             <tr>
                 <td>连接字符串: </td>
                 <td>
-                    <input type="text" id="txtConnectionString" style="width: 686px" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
+                    <input type="text" id="txtConnectionString" style="max-width: 686px;width: 100%" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>命名空间: </td>
                 <td>
-                    <input type="text" id="txtPackage" style="width: 686px" value="com.Fang.xxx.{0}" />
+                    <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="com.Fang.xxx.{0}" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>表和视图: </td>
                 <td>
-                    <select id="sltTables" class="w700"></select>
+                    <select id="sltTables" style="max-width:700px;width:100%"></select>
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>类名: </td>
                 <td>
-                    <input type="text" id="txtClassName" class="" style="width: 686px" />
+                    <input type="text" id="txtClassName" class="" style="max-width: 686px;width: 100%" />
                 </td>
             </tr>
             <tr class="eleHide">
                 <td>类型: </td>
                 <td>
-                    <select id="sltDataType" class="w700 ">
+                    <select id="sltDataType" style="max-width:700px;width:100%">
                         <option value="Entity">Entity</option>
                         <option value="Dao">Dao</option>
                         <option value="DaoAdd">Dao.Add</option>
@@ -124,6 +124,20 @@
                 $("#divCode").text(result);
             }
         });
+    });
+
+    $("input:radio").bind("change", function () {
+        var connectionString = $("#txtConnectionString").val();
+
+        if (this.value == 'SqlServer') {
+            if (connectionString.indexOf("port=") > 0) {
+                $("#txtConnectionString").val(connectionString.replaceAll("port=xxxx", ""));
+            }
+        } else {
+            if (connectionString.indexOf("port=") < 0) {
+                $("#txtConnectionString").val(connectionString + "port=xxxx");
+            }
+        }
     });
 
     $("#divCode").bind("mouseover", function () {

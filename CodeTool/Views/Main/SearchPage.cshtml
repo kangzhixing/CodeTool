@@ -1,10 +1,11 @@
 ﻿@{
     Layout = "~/Views/Shared/MasterPage.cshtml";
-    ViewBag.Title = "SearchPages";
+    ViewBag.Title = "搜索结果";
 }
 @using CodeTool.common
 @model  CodeTool.Models.Index.IndexSearchPagesOut
 <div class="divPage">
+    <div class="divTitleText"></div>
     @if (Model.MethodList == null)
     {
         <script type="text/javascript">

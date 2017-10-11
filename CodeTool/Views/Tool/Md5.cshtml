@@ -15,11 +15,11 @@
 <div class="divPage">
     <div class="divTitleText"></div>
     <div class="divCondition">
-        <table style="margin-top: 10px">
+        <table style="margin-top: 10px;width:100%">
             <tr>
-                <td>原字符串: </td>
+                <td width="80px">原字符串: </td>
                 <td>
-                    <input type="text" id="txtOriStr" style="width: 586px" placeholder="" />
+                    <input type="text" id="txtOriStr" style="max-width: 586px;width:90%" placeholder="" />
                 </td>
             </tr>
         </table>
@@ -38,7 +38,7 @@
         }
     });
 
-    $("#divResult").bind("mouseover",function () {
+    $("#divResult").bind("mouseover", function () {
         SelectText("divResult");
     });
 
