@@ -367,16 +367,16 @@ input[type=text] {
 .goTop {
     width: 35px;
     height: 35px;
-    bottom: 50px;
-    right: 50px;
+    bottom: 20px;
+    right: 20px;
     position: fixed;
     background-color: #dcdcdc;
     padding: 8px;
     cursor: pointer;
+    transition: 0.2s;
 }
 
     .goTop:hover {
-        transition: 0.2s;
         box-shadow: 0 0 15px grey;
         background-color: #607D8B;
     }
