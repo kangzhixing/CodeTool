@@ -45,7 +45,7 @@ namespace CodeTool.Controllers
                 cache.Set("pages", pages);
             }
 
-            if (keyword == "kzx")
+            if (keyword == "all")
             {
                 return new JlJsonResult()
                 {

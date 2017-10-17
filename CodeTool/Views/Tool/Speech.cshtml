@@ -27,7 +27,6 @@
                 <option value="4">丫丫</option>
             </select>
             <button id="btnPlay" class="jk-button">播放</button>
-            <audio id="adoPlayer" autoplay="autoplay" preload="metadata"></audio>
         </p>
         <div class="divInput">
             <textarea id="txtContent" rows="25"></textarea>
@@ -36,28 +35,13 @@
 </div>
 <script type="text/javascript">
 
-    var playTime = 0;
     $("#btnPlay").bind("click", function (e) {
-        if (playTime++ == 0) { // 解决Safari不自动播放
-            $("#adoPlayer")[0].play();
-        }
         var text = encodeURI($("#txtContent").val());
         if ($("#txtContent").val().trim().length == 0) {
             text = '我的大脑一片空白，不知道要说些什么';
         }
-
-        $.getJSON("/Tool/GetAudio", {
-            tex: text,
-            per: $("#sltPer").find("option:selected").val()
-        }, function (data) {
-            if (data != null && data.Message != null) {
-                alert(data.Message);
-            }
-            else {
-                $("#adoPlayer").attr("src", "..\\" + data);
-                $("#adoPlayer")[0].play();
-            }
-        });
+        SpeenchText(text);
     });
+
 
 </script>
