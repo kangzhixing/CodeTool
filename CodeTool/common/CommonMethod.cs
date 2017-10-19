@@ -10,7 +10,6 @@ using JasonLib.Data;
 using System.Data;
 using System.Web;
 using System.Data.Common;
-using MySql.Data.MySqlClient;
 
 namespace CodeTool.common
 {
