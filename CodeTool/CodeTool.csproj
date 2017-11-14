@@ -47,7 +47,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dll\AipSdk.dll</HintPath>
     </Reference>
-    <Reference Include="JasonLib">
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>Dll\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="JasonLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Dll\JasonLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +59,18 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>Dll\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>Dll\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net">
+      <HintPath>Dll\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats">
+      <HintPath>Dll\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -219,7 +235,13 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\base.css" />
     <Content Include="Dll\AipSdk.dll" />
+    <Content Include="Dll\ICSharpCode.SharpZipLib.dll" />
     <Content Include="Dll\JasonLib.dll" />
+    <Content Include="Dll\Newtonsoft.Json.dll" />
+    <Content Include="Dll\NPOI.dll" />
+    <Content Include="Dll\NPOI.OOXML.dll" />
+    <Content Include="Dll\NPOI.OpenXml4Net.dll" />
+    <Content Include="Dll\NPOI.OpenXmlFormats.dll" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
@@ -267,6 +289,7 @@
     <Content Include="Views\Tool\Encode.cshtml" />
     <Content Include="Views\CodeMaker\DotnetCode.cshtml" />
     <Content Include="Views\Tool\Speech.cshtml" />
+    <Content Include="Views\Tool\Export.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

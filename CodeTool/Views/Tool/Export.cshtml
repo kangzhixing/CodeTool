@@ -1,0 +1,195 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "Excel导出";
+}
+<style type="text/css">
+    .eleHide {
+        display: none;
+    }
+
+    .divContent {
+        box-shadow: 0 0 10px grey;
+        padding: 20px;
+    }
+
+    #tbDatas tr:first-child {
+        font-weight: bold;
+    }
+
+    #tbDatas tr {
+        background-color: lightgray;
+    }
+
+        #tbDatas tr:hover {
+            background-color: darkgray;
+        }
+
+    #tbDatas td {
+        padding: 5px;
+        white-space: nowrap;
+    }
+</style>
+<div id="pageMSSQL" class="divPage">
+    <div class="divTitleText"></div>
+    <div class="divCondition">
+        <div>
+            <button id="btnSearch" class="jk-button">查询</button>
+            <button id="btnExport" class="jk-button">导出</button>
+        </div>
+        <table style="margin-top: 10px;width:100%">
+            <tr>
+                <td width="80px">Excel类型: </td>
+                <td>
+                    <input type="radio" name="excelType" id="cboXlsx" value="xlsx" checked="checked" />
+                    <label for="cboXlsx">.xlsx</label>
+                    <input type="radio" name="excelType" id="cboXls" value="xls" title="xls格式限制单sheet数据不超过65535行" />
+                    <label for="cboXls">.xls</label>
+                </td>
+            </tr>
+            <tr>
+                <td>数据库类型: </td>
+                <td>
+                    <input type="radio" name="dbType" id="cboSqlServer" checked="checked" value="SqlServer" />
+                    <label for="cboSqlServer">Sql Server</label>
+                    <input type="radio" name="dbType" id="cboMySql" value="MySql" />
+                    <label for="cboMySql">MySql</label>
+                </td>
+            </tr>
+            <tr>
+                <td>文件名: </td>
+                <td>
+                    <input type="text" id="txtFileName" style="max-width: 686px;width: 100%" placeholder="默认为当前时间" />
+                </td>
+            </tr>
+            <tr>
+                <td>连接字符串: </td>
+                <td>
+                    <input type="text" id="txtConnectionString" style="max-width: 686px;width: 100%" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
+                </td>
+            </tr>
+            <tr>
+                <td valign="top">SQL语句: </td>
+                <td>
+                    <pre type="text" id="txtSql" style="max-width: 688px;width: 100%;min-height:100px;white-space: pre-wrap;" class="pinput" contenteditable="true"></pre>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="divDatas" class="divContent eleHide" style="display: none;overflow-x:auto">
+        <table id="tbDatas"></table>
+    </div>
+    <iframe id="exportContainer" style="display: none;"></iframe>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        var sqlserver = "SELECT TOP 100 * FROM XXXXX";
+        var mysql = "SELECT * FROM XXXXX LIMIT 100";
+        $("#txtSql").text(sqlserver);
+
+        $("input[name=dbType]").bind("click", function () {
+            if ($(this).val() == "SqlServer" && ($("#txtSql").text() == mysql || $("#txtSql").text() == '')) {
+                $("#txtSql").text(sqlserver);
+            } else if ($(this).val() == "MySql" && ($("#txtSql").text() == sqlserver || $("#txtSql").text() == '')) {
+                $("#txtSql").text(mysql);
+            }
+        });
+
+    });
+
+    $("body").keydown(function (e) {
+        var scroll = 0;
+        if (e.key == "ArrowLeft") {
+            ScrollTable(200);
+        } else if (e.key == "ArrowRight") {
+
+            ScrollTable(-200);
+        }
+    });
+    var timer = null; //定义一个定时器
+    function ScrollTable(px) {
+        clearInterval(timer);
+        //设置一个定时器
+        var move = 0;
+        var start = $("#divDatas").scrollLeft();
+        var each = px / 20;
+        timer = setInterval(function () {
+            move += each;
+            $("#divDatas").scrollLeft(start - move);
+            if (Math.abs(move) > Math.abs(px)) {
+                clearInterval(timer);
+            }
+        }, 10);
+    }
+
+    $("#btnSearch").bind("click", function () {
+        var connectionString = $("#txtConnectionString").val();
+        var sql = $("#txtSql").text();
+        if (sql.trim() == '') return;
+
+        $("#tbDatas").html('');
+        $(".eleHide").hide();
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: "/Tool/GetDatas",
+            cache: false,
+            timeout: 60 * 60 * 1000,
+            dataType: "json",
+            data: {
+                Connection: encodeURIComponent(connectionString),
+                Sql: encodeURIComponent(sql),
+                DbType: $("input[name=dbType]:radio[checked=checked]").val()
+            },
+            success: function (result) {
+                if (result != null && result.Message != null) {
+                    alert(result.Message);
+                    $(".eleHide").hide();
+                }
+                else {
+                    $(".eleHide").fadeIn(200);
+                    var html = "";
+                    if (result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+
+                            html += "<tr>";
+                            for (var j = 0; j < result[i].length; j++) {
+                                html += "<td>" + result[i][j] + "</td>";
+                            }
+                            html += "</tr>";
+                        }
+                    }
+                    if (result.length == 101)
+                        html += "<tr style='background-color:white;color:grey'><td colspan='100'> * 数据仅显示最多一百条数据</td></tr>";
+                    $("#tbDatas").html(html);
+
+                }
+            }
+        });
+
+    });
+
+    $("#btnExport").bind("click", function () {
+        var connectionString = $("#txtConnectionString").val();
+        var sql = $("#txtSql").text();
+        var fileName = $("#txtFileName").val();
+        if (sql.trim() == '') return;
+        $("#exportContainer").attr("src", "/Tool/Export2File?Connection=" + encodeURIComponent(connectionString) + "&Sql=" + encodeURIComponent(sql) + "&fileName=" + encodeURIComponent(fileName)
+            + "&DbType=" + $("input[name=dbType]:radio[checked=checked]").val() + "&excelType=" + $("input[name=excelType]:radio[checked=checked]").val());
+    });
+
+    $("input[name=dbType]").bind("change", function () {
+        var connectionString = $("#txtConnectionString").val();
+
+        if (this.value == 'SqlServer') {
+            if (connectionString.indexOf("port=") > 0) {
+                $("#txtConnectionString").val(connectionString.replaceAll("port=xxxx", ""));
+            }
+        } else {
+            if (connectionString.indexOf("port=") < 0) {
+                $("#txtConnectionString").val(connectionString + "port=xxxx");
+            }
+        }
+    });
+
+</script>

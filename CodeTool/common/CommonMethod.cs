@@ -147,8 +147,8 @@ namespace CodeTool.common
                 Name = row["Name"].ToString(),
                 DbType = row["DbType"].ToString(),
                 Length = JlConvert.TryToInt(row["Length"]),
-                IsNullable = JlConvert.TryToBoolean(row["IsNullable"].ToString()),
-                IsIdentity = JlConvert.TryToBoolean(row["IsIdentity"].ToString()),
+                IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString()),
+                IsIdentity = JlConvert.TryToBool(row["IsIdentity"].ToString()),
                 Description = HttpUtility.HtmlEncode(row["Description"].ToString())
             }).ToList();
         }
@@ -169,8 +169,8 @@ namespace CodeTool.common
                 Name = row["Name"].ToString(),
                 DbType = row["DbType"].ToString(),
                 Length = JlConvert.TryToInt(row["Length"]),
-                IsNullable = JlConvert.TryToBoolean(row["IsNullable"].ToString().ToLower() == "yes"),
-                IsIdentity = JlConvert.TryToBoolean(row["Extra"].ToString().Contains("auto_increment")),
+                IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString().ToLower() == "yes"),
+                IsIdentity = JlConvert.TryToBool(row["Extra"].ToString().Contains("auto_increment")),
                 ColumnKey = row["COLUMN_KEY"].ToString(),
                 Description = HttpUtility.HtmlEncode(row["Description"].ToString())
             }).ToList();
