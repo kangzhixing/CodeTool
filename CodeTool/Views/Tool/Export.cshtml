@@ -20,6 +20,10 @@
         background-color: lightgray;
     }
 
+        #tbDatas tr:first-child {
+            background-color: darkgray;
+        }
+
         #tbDatas tr:hover {
             background-color: darkgray;
         }
@@ -78,7 +82,13 @@
     <div id="divDatas" class="divContent eleHide" style="display: none;overflow-x:auto">
         <table id="tbDatas"></table>
     </div>
-    <iframe id="exportContainer" style="display: none;"></iframe>
+    <form method="post" id="fmExport" style="display: none" action="/Tool/Export2File">
+        <input name="sql" />
+        <input name="Connection" />
+        <input name="fileName" />
+        <input name="DbType" />
+        <input name="excelType" />
+    </form>
 </div>
 <script type="text/javascript">
 
@@ -174,8 +184,12 @@
         var sql = $("#txtSql").text();
         var fileName = $("#txtFileName").val();
         if (sql.trim() == '') return;
-        $("#exportContainer").attr("src", "/Tool/Export2File?Connection=" + encodeURIComponent(connectionString) + "&Sql=" + encodeURIComponent(sql) + "&fileName=" + encodeURIComponent(fileName)
-            + "&DbType=" + $("input[name=dbType]:radio[checked=checked]").val() + "&excelType=" + $("input[name=excelType]:radio[checked=checked]").val());
+        $("#fmExport").find("input[name=Connection]").val(encodeURIComponent(connectionString));
+        $("#fmExport").find("input[name=fileName]").val(encodeURIComponent(fileName));
+        $("#fmExport").find("input[name=DbType]").val($("input[name=dbType]:radio[checked=checked]").val());
+        $("#fmExport").find("input[name=excelType]").val($("input[name=excelType]:radio[checked=checked]").val());
+        $("#fmExport").find("input[name=sql]").val(encodeURIComponent(sql));
+        $("#fmExport").submit();
     });
 
     $("input[name=dbType]").bind("change", function () {

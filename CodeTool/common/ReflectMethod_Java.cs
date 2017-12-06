@@ -25,8 +25,10 @@ public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "ent
 
             foreach (var f in inModel.FieldDescriptions)
             {
-                result.AppendLine(@"
-    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + JlString.ToLowerFirst(f.Name) + ";" + (string.IsNullOrWhiteSpace(f.Description) ? "" : " //" + f.Description));
+                if (!string.IsNullOrEmpty(f.Description))
+                    result.AppendLine("    //" + f.Description.Replace("\n", "  "));
+                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + f.Name.ToLower() + @";
+");
 
                 getterAndSetter.AppendLine(string.Format(@"
     public {2} get{1}() {{
@@ -34,7 +36,7 @@ public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "ent
     }}
     public void set{1}({2} {0}) {{
         this.{0} = {0};
-    }}", JlString.ToLowerFirst(f.Name), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
+    }}", f.Name.ToLower(), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
 
             }
             result.Append(getterAndSetter);
@@ -158,7 +160,7 @@ public interface {2}Mapper{{
             JlDbTypeMap.Map4J(field.DbType),
             JlString.ToLowerFirst(field.Name),
             JlString.ToLowerFirst(className),
-            !string.IsNullOrEmpty(field.ColumnKey) ? className + " select" : "List<"+className + "> select"));
+            !string.IsNullOrEmpty(field.ColumnKey) ? className + " select" : "List<" + className + "> select"));
 
             return codeStr.ToString();
         }

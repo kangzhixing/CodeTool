@@ -122,7 +122,16 @@ namespace CodeTool.Controllers
             return actionResult;
         }
 
-
+        public void Export2File(string content, string fileName)
+        {
+            System.Web.HttpContext.Current.Response.Clear();
+            System.Web.HttpContext.Current.Response.AddHeader("content-disposition", "attachment; filename=" + (string.IsNullOrEmpty(fileName) ? DateTime.Now.ToString("yyyyMMddHHmmss") : fileName) + ".cs");
+            System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            System.Web.HttpContext.Current.Response.BinaryWrite(HttpUtility.UrlDecodeToBytes(content));
+            //ep.SaveAs(Response.OutputStream); 第二种方式  
+            System.Web.HttpContext.Current.Response.Flush();
+            System.Web.HttpContext.Current.Response.End();
+        }
 
     }
 }

@@ -17,7 +17,8 @@
     <div class="divCondition">
         <div>
             <button id="btnConnect" class="jk-button mr15">连接</button>
-            <button id="btnGenerat" class="jk-button-disabled" disabled="disabled">生成</button>
+            <button id="btnGenerat" class="jk-button-disabled mr15" disabled="disabled">生成</button>
+            <button id="btnExport" class="jk-button-disabled" disabled="disabled">下载</button>
         </div>
         <table style="margin-top: 10px;width:100%">
             <tr>
@@ -63,6 +64,10 @@
     </div>
     <pre id="divCode" class="divContent" style="display: none">
     </pre>
+    <form method="post" id="fmExport" style="display: none" action="/CodeMaker/Export2File">
+        <input name="content" />
+        <input name="fileName" />
+    </form>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -97,6 +102,14 @@
 
     }
 
+    $("#btnExport").bind("click", function () {
+        var content = $("#divCode").text();
+        if (content.trim() == '') return;
+        $("#fmExport").find("input[name=content]").val(encodeURIComponent(content));
+        $("#fmExport").find("input[name=fileName]").val($("#txtClassName").val());
+        $("#fmExport").submit();
+    });
+
     $("#btnGenerat").bind("click", function () {
         var connectionString = $("#txtConnectionString").val();
         var table = $("#sltTables").val();
@@ -119,6 +132,7 @@
             else {
                 $("#divCode").fadeIn(200);
                 $("#divCode").text(result);
+                $("#btnExport").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
             }
         });
     });

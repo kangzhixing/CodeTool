@@ -290,6 +290,7 @@
     <Content Include="Views\CodeMaker\DotnetCode.cshtml" />
     <Content Include="Views\Tool\Speech.cshtml" />
     <Content Include="Views\Tool\Export.cshtml" />
+    <Content Include="Views\Tool\Worm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

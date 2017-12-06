@@ -128,8 +128,17 @@ namespace CodeTool.Controllers
                 };
             }
             var ds = new DataSet();
-            JlDatabase.Fill(HttpUtility.UrlDecode(connection), HttpUtility.UrlDecode(sql), ds, null, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), dbType));
-
+            try
+            {
+                JlDatabase.Fill(HttpUtility.UrlDecode(connection), HttpUtility.UrlDecode(sql), ds, null, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), dbType));
+            }
+            catch (Exception ex)
+            {
+                return new JlJsonResult()
+                {
+                    Content = JlJson.ToJson(new { Message = ex.Message })
+                };
+            }
             var result = new List<object>();
 
             var rowHeader = new List<object>();
@@ -193,6 +202,5 @@ namespace CodeTool.Controllers
             System.Web.HttpContext.Current.Response.End();
 
         }
-
     }
 }

@@ -17,7 +17,8 @@
     <div class="divCondition">
         <div>
             <button id="btnConnect" class="jk-button mr15">连接</button>
-            <button id="btnGenerat" class="jk-button-disabled" disabled="disabled">生成</button>
+            <button id="btnGenerat" class="jk-button-disabled mr15" disabled="disabled">生成</button>
+            <button id="btnExport" class="jk-button-disabled" disabled="disabled">下载</button>
         </div>
         <table style="margin-top: 10px;width:100%">
             <tr>
@@ -56,31 +57,17 @@
             <tr class="eleHide">
                 <td>类型: </td>
                 <td>
-                    <select id="sltDataType" style="max-width:700px;width:100%">
-                        <option value="Entity">Entity</option>
-                        <option value="Dao">Dao</option>
-                        <option value="DaoAdd">Dao.Add</option>
-                        <option value="DaoUpdate">Dao.Update</option>
-                        <option value="DaoUpdateColumn">Dao.UpdateColumn</option>
-                        <option value="DaoGet">Dao.Get</option>
-                        <option value="DaoGetList">Dao.GetList</option>
-                        <option value="DaoGetPageList">Dao.GetPageList</option>
-                        <option value="DaoGetColumn">Dao.GetColumn</option>
-                        <option value="DaoGetCount">Dao.GetCount</option>
-                        <option value="DaoGetSum">Dao.GetSum</option>
-                        <option value="DaoGetAvg">Dao.GetAvg</option>
-                        <option value="DaoGetMax">Dao.GetMax</option>
-                        <option value="DaoGetMin">Dao.GetMin</option>
-                        <option value="DaoDelete">Dao.Delete</option>
-                        <option value="DaoExists">Dao.Exists</option>
-                        <option value="DaoOther">Dao.Other</option>
-                    </select>
+                    <select id="sltDataType" style="max-width:700px;width:100%"></select>
                 </td>
             </tr>
         </table>
     </div>
     <pre id="divCode" class="divContent" style="display: none">
     </pre>
+    <form method="post" id="fmExport" style="display: none" action="/CodeMaker/Export2File">
+        <input name="content" />
+        <input name="fileName" />
+    </form>
 </div>
 <script type="text/javascript">
 
@@ -89,7 +76,7 @@
     });
 
     function InitCodeTypeSlt() {
-        $.getJSON("/CodeMaker/GetCodeTypeSlt?lang=Java", function (data) {
+        $.getJSON("/CodeMaker/GetCodeTypeSlt?lang=Java&r=" + new Date().getTime(), function (data) {
             $("#sltDataType").html('');
             var html = '';
             for (var i = 0; i < data.length; i++) {
@@ -99,6 +86,14 @@
         });
 
     }
+
+    $("#btnExport").bind("click", function () {
+        var content = $("#divCode").text();
+        if (content.trim() == '') return;
+        $("#fmExport").find("input[name=content]").val(encodeURIComponent(content));
+        $("#fmExport").find("input[name=fileName]").val($("#txtClassName").val());
+        $("#fmExport").submit();
+    });
 
     $("#btnGenerat").bind("click", function () {
         var connectionString = $("#txtConnectionString").val();
@@ -122,6 +117,7 @@
             else {
                 $("#divCode").fadeIn(200);
                 $("#divCode").text(result);
+                $("#btnExport").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
             }
         });
     });

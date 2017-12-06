@@ -24,7 +24,7 @@ namespace {0}
             {
                 result.AppendLine(@"
         /// <summary>
-        /// " + (string.IsNullOrWhiteSpace(f.Description) ? f.Name : f.Description) + @"
+        /// " + (string.IsNullOrWhiteSpace(f.Description) ? f.Name : f.Description.Replace("\n", "  ")) + @"
         /// </summary>
         public " + JlDbTypeMap.Map(f.DbType, f.IsNullable) + " " + f.Name + " { get; set; }");
             });
