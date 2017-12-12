@@ -36,14 +36,7 @@ namespace CodeTool.Controllers
             UpdateModel(inModel);
             var keyword = inModel.PageName.ToLower();
 
-            var cache = JlHttpCache.Current;
-            var pages = cache.Get<Dictionary<string, MethodInfo>>("pages");
-
-            if (pages == null)
-            {
-                pages = CommonMethod.GetAllPageMethod();
-                cache.Set("pages", pages);
-            }
+            var pages = CommonMethod.GetAllPageMethod();
 
             if (keyword == "all")
             {
@@ -83,14 +76,13 @@ namespace CodeTool.Controllers
 
             try
             {
-                var cache = JlHttpCache.Current;
-                var allPages = cache.Get<Dictionary<string, MethodInfo>>("pages");
+                var allPages = CommonMethod.GetAllPageMethod();
 
                 var result = allPages.Where(m => isall == 1 || m.Key.Contains(keyword)).ToDictionary(m => m.Key, m => m.Value);
 
                 if (result.Count > 0)
                 {
-                    outModel.MethodList = result.Values.ToList();
+                    outModel.MethodList = result.Values.ToList().OrderBy(l => CommonMethod.GetMethodDescription(l)).ToList();
                 }
 
             }

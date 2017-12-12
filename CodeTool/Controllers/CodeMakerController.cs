@@ -122,10 +122,12 @@ namespace CodeTool.Controllers
             return actionResult;
         }
 
-        public void Export2File(string content, string fileName)
+        public void DownloadFile(string content, string fileName, string extension)
         {
+            fileName = string.IsNullOrEmpty(extension) ? DateTime.Now.ToString("yyyyMMddHHmmss") : fileName;
+            extension = string.IsNullOrEmpty(extension) ? "txt" : extension;
             System.Web.HttpContext.Current.Response.Clear();
-            System.Web.HttpContext.Current.Response.AddHeader("content-disposition", "attachment; filename=" + (string.IsNullOrEmpty(fileName) ? DateTime.Now.ToString("yyyyMMddHHmmss") : fileName) + ".cs");
+            System.Web.HttpContext.Current.Response.AddHeader("content-disposition", "attachment; filename=" + fileName + "." + extension);
             System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             System.Web.HttpContext.Current.Response.BinaryWrite(HttpUtility.UrlDecodeToBytes(content));
             //ep.SaveAs(Response.OutputStream); 第二种方式  

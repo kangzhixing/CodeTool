@@ -111,7 +111,7 @@ namespace CodeTool.Controllers
         }
 
         [ViewPage]
-        [Description("Excel导出")]
+        [Description("数据库查询")]
         public ActionResult Export()
         {
             return View();
@@ -120,6 +120,7 @@ namespace CodeTool.Controllers
         public ActionResult GetDatas(string connection, string sql, string dbType)
         {
             sql = HttpUtility.UrlDecode(sql);
+            connection = HttpUtility.UrlDecode(connection);
             if (sql.Contains("delete ") || sql.Contains("update ") || sql.Contains("drop "))
             {
                 return new JlJsonResult()
@@ -130,7 +131,7 @@ namespace CodeTool.Controllers
             var ds = new DataSet();
             try
             {
-                JlDatabase.Fill(HttpUtility.UrlDecode(connection), HttpUtility.UrlDecode(sql), ds, null, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), dbType));
+                JlDatabase.Fill(connection, sql, ds, null, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), dbType));
             }
             catch (Exception ex)
             {
@@ -139,39 +140,7 @@ namespace CodeTool.Controllers
                     Content = JlJson.ToJson(new { Message = ex.Message })
                 };
             }
-            var result = new List<object>();
-
-            var rowHeader = new List<object>();
-            for (var i = 0; i < ds.Tables[0].Columns.Count; i++)
-            {
-                rowHeader.Add(ds.Tables[0].Columns[i].ToString());
-            }
-            result.Add(rowHeader);
-
-            for (var j = 0; j < ds.Tables[0].Rows.Count && j < 100; j++)
-            {
-                var row = new List<object>();
-                for (var k = 0; k < ds.Tables[0].Columns.Count; k++)
-                {
-                    switch (ds.Tables[0].Columns[k].DataType.Name.ToLower())
-                    {
-                        case "string":
-                            row.Add(ds.Tables[0].Rows[j][k].ToString());
-                            break;
-                        case "bool":
-                            row.Add(JlConvert.TryToBool(ds.Tables[0].Rows[j][k]));
-                            break;
-                        case "int32":
-                        case "decimal":
-                            row.Add(JlConvert.TryToDouble(ds.Tables[0].Rows[j][k]));
-                            break;
-                        default:
-                            row.Add(ds.Tables[0].Rows[j][k].ToString());
-                            break;
-                    }
-                }
-                result.Add(row);
-            }
+            var result = CommonMethod.ConvertDataTableToList(ds.Tables[0], true);
 
             return new JlJsonResult()
             {

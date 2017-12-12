@@ -17,20 +17,25 @@ namespace CodeTool.common
     {
         public static Dictionary<string, MethodInfo> GetAllPageMethod()
         {
-            var parentType = Type.GetType(JlConfig.GetValue<string>("BaseController"));
-            var controllers = Assembly.GetAssembly(parentType).GetTypes().Where(t => t.BaseType.Name == "BaseController").ToArray();
-
-            var pageClass = new Dictionary<string, MethodInfo>();
-            controllers.ForEach(c =>
+            var cache = JlHttpCache.Current;
+            var pages = cache.Get<Dictionary<string, MethodInfo>>("pages");
+            if (pages == null)
             {
-                c.GetMethods().Where(t =>
-                    t.GetCustomAttributes(typeof(ViewPageAttribute), true).Length > 0).ForEach(m =>
-                    {
-                        pageClass.Add(GetMethodDescription(m).ToLower(), m);
-                    });
-            });
+                var parentType = Type.GetType(JlConfig.GetValue<string>("BaseController"));
+                var controllers = Assembly.GetAssembly(parentType).GetTypes().Where(t => t.BaseType.Name == "BaseController").ToArray();
 
-            return pageClass;
+                pages = new Dictionary<string, MethodInfo>();
+                controllers.ForEach(c =>
+                {
+                    c.GetMethods().Where(t => t.GetCustomAttributes(typeof(ViewPageAttribute), true).Length > 0).ForEach(m =>
+                    {
+                        pages.Add(GetMethodDescription(m).ToLower(), m);
+                    });
+                });
+                cache.Set("pages", pages);
+            }
+
+            return pages;
         }
 
         public static string GetUrlByControllerMethod(MethodInfo method)
@@ -90,6 +95,54 @@ namespace CodeTool.common
                     }
                 default: return null;
             }
+        }
+
+        /// <summary>
+        /// 将DataTable转换为List<object>
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="hasHeader"></param>
+        /// <returns></returns>
+        public static List<object> ConvertDataTableToList(DataTable dt, bool hasHeader = false)
+        {
+            var result = new List<object>();
+
+            if (hasHeader)
+            {
+                var rowHeader = new List<object>();
+                for (var i = 0; i < dt.Columns.Count; i++)
+                {
+                    rowHeader.Add(dt.Columns[i].ToString());
+                }
+                result.Add(rowHeader);
+            }
+
+            for (var j = 0; j < dt.Rows.Count && j < 100; j++)
+            {
+                var row = new List<object>();
+                for (var k = 0; k < dt.Columns.Count; k++)
+                {
+                    switch (dt.Columns[k].DataType.Name.ToLower())
+                    {
+                        case "string":
+                            row.Add(dt.Rows[j][k].ToString());
+                            break;
+                        case "bool":
+                            row.Add(JlConvert.TryToBool(dt.Rows[j][k]));
+                            break;
+                        case "int32":
+                        case "decimal":
+                            row.Add(JlConvert.TryToDouble(dt.Rows[j][k]));
+                            break;
+                        default:
+                            row.Add(dt.Rows[j][k].ToString());
+                            break;
+                    }
+                }
+                result.Add(row);
+            }
+
+            return result;
         }
 
         private static List<string> GetDatabaseTables_MySql(string connectionString)

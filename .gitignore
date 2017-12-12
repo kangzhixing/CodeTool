@@ -265,3 +265,6 @@ CodeTool/Views/Test/FormSubmit.cshtml
 CodeTool/Controllers/TestController.cs
 *.csv
 *.mp3
+CodeTool/Views/Test/LakalaConfirm.cshtml
+CodeTool/Views/Test/LakalaRefund.cshtml
+CodeTool/Views/Tool/Worm.cshtml

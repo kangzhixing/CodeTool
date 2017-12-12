@@ -21,7 +21,8 @@ namespace CodeTool.common
 import java.util.*;
 import java.math.*;
 
-public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), inModel.CodeMakerGeneratCodeIn.ClassName));
+public class {1} {{
+", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), inModel.CodeMakerGeneratCodeIn.ClassName));
 
             foreach (var f in inModel.FieldDescriptions)
             {
@@ -30,13 +31,13 @@ public class {1} {{", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "ent
                 result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + f.Name.ToLower() + @";
 ");
 
-                getterAndSetter.AppendLine(string.Format(@"
-    public {2} get{1}() {{
+                getterAndSetter.AppendLine(string.Format(@"    public {2} get{1}() {{
         return {0};
     }}
     public void set{1}({2} {0}) {{
         this.{0} = {0};
-    }}", f.Name.ToLower(), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
+    }}
+", f.Name.ToLower(), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
 
             }
             result.Append(getterAndSetter);

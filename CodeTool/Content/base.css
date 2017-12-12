@@ -139,33 +139,41 @@ input[type=text] {
         height: 100px;
         line-height: 100px;
         margin: 50px 30px 0 30px;
+        background: #f5f5f5;
+        display: inline-block;
+        box-shadow: 0 0 10px grey;
     }
-}/* 设置了浏览器宽度不小于720px时 */
 
+        .divSearchResult:hover {
+            background: #eeeeee;
+            box-shadow: 0 0 30px grey;
+        }
+}
+
+/* 设置了浏览器宽度不小于720px时 */
 @media screen and (max-width: 720px) {
     .divSearchResult {
-        max-width: 160px;
-        width: 30%;
+        display: block;
+        background: #eeeeee;
+        max-width: 100%;
         height: 70px;
         line-height: 70px;
-        margin: 30px 20px 0 20px;
+        margin: 20px auto;
+        box-shadow: 2px 2px 2px grey;
     }
+
+        .divSearchResult:hover {
+            background: #d5d5d5;
+        }
 }
 
 .divSearchResult {
     transition: 0.2s;
     text-align: center;
-    background: #f5f5f5;
-    display: inline-block;
     cursor: pointer;
-    box-shadow: 0 0 10px grey;
     word-break: break-all;
+    word-wrap: break-word;
 }
-
-    .divSearchResult:hover {
-        background: #eeeeee;
-        box-shadow: 0 0 30px grey;
-    }
 
 #div404 {
     text-align: center;
@@ -399,16 +407,16 @@ input[type=text] {
     bottom: 20px;
     right: 20px;
     position: fixed;
-    background-color: #dcdcdc;
+    background-color: #cccccc;
     padding: 8px;
     cursor: pointer;
     transition: 0.2s;
-    box-shadow: 0 0 35px white;
+    box-shadow: 0 0 30px white;
 }
 
     .goTop:hover {
         box-shadow: 0 0 15px grey;
-        background-color: #607D8B;
+        background-color: grey;
     }
 
 .goTop_t {

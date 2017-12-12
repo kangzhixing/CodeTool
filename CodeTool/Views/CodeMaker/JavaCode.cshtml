@@ -16,13 +16,13 @@
     <div class="divTitleText"></div>
     <div class="divCondition">
         <div>
-            <button id="btnConnect" class="jk-button mr15">连接</button>
-            <button id="btnGenerat" class="jk-button-disabled mr15" disabled="disabled">生成</button>
+            <button id="btnConnect" class="jk-button mr10">连接</button>
+            <button id="btnGenerat" class="jk-button-disabled mr10" disabled="disabled">生成</button>
             <button id="btnExport" class="jk-button-disabled" disabled="disabled">下载</button>
         </div>
         <table style="margin-top: 10px;width:100%">
             <tr>
-                <td width="80px">数据库类型: </td>
+                <td width="90px">数据库类型： </td>
                 <td>
                     <input type="radio" name="dbType" id="cboSqlServer" checked="checked" value="SqlServer" />
                     <label for="cboSqlServer">Sql Server</label>
@@ -31,31 +31,31 @@
                 </td>
             </tr>
             <tr>
-                <td>连接字符串: </td>
+                <td>连接字符串：</td>
                 <td>
                     <input type="text" id="txtConnectionString" style="max-width: 686px;width: 100%" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
                 </td>
             </tr>
             <tr class="eleHide">
-                <td>命名空间: </td>
+                <td>命名空间：</td>
                 <td>
                     <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="com.Fang.xxx.{0}" />
                 </td>
             </tr>
             <tr class="eleHide">
-                <td>表和视图: </td>
+                <td>表和视图：</td>
                 <td>
                     <select id="sltTables" style="max-width:700px;width:100%"></select>
                 </td>
             </tr>
             <tr class="eleHide">
-                <td>类名: </td>
+                <td>类名：</td>
                 <td>
                     <input type="text" id="txtClassName" class="" style="max-width: 686px;width: 100%" />
                 </td>
             </tr>
             <tr class="eleHide">
-                <td>类型: </td>
+                <td>类型：</td>
                 <td>
                     <select id="sltDataType" style="max-width:700px;width:100%"></select>
                 </td>
@@ -64,9 +64,10 @@
     </div>
     <pre id="divCode" class="divContent" style="display: none">
     </pre>
-    <form method="post" id="fmExport" style="display: none" action="/CodeMaker/Export2File">
+    <form method="post" id="fmExport" style="display: none" action="/CodeMaker/DownloadFile">
         <input name="content" />
         <input name="fileName" />
+        <input name="extension" value="java" />
     </form>
 </div>
 <script type="text/javascript">
@@ -95,6 +96,16 @@
         $("#fmExport").submit();
     });
 
+    document.body.oncopy = function () {
+        setTimeout(function () {
+            var text = clipboardData.getData("text");
+            if (text) {
+                text = text + "\r\n本篇文章来源于 www.地址.COM 原文链接：" + location.href;
+                clipboardData.setData("text", text);
+            }
+        }, 100)
+    }  
+
     $("#btnGenerat").bind("click", function () {
         var connectionString = $("#txtConnectionString").val();
         var table = $("#sltTables").val();
@@ -118,6 +129,12 @@
                 $("#divCode").fadeIn(200);
                 $("#divCode").text(result);
                 $("#btnExport").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
+                if (type.indexOf('Xml') > 0) {
+                    $("#fmExport").find("input[name=extension]").val('xml');
+                }
+                else {
+                    $("#fmExport").find("input[name=extension]").val('java');
+                }
             }
         });
     });

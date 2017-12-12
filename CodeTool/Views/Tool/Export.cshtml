@@ -1,6 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/MasterPage.cshtml";
-    ViewBag.Title = "Excel导出";
+    ViewBag.Title = "数据库查询";
 }
 <style type="text/css">
     .eleHide {
@@ -37,7 +37,7 @@
     <div class="divTitleText"></div>
     <div class="divCondition">
         <div>
-            <button id="btnSearch" class="jk-button">查询</button>
+            <button id="btnSearch" class="jk-button mr10">查询</button>
             <button id="btnExport" class="jk-button">导出</button>
         </div>
         <table style="margin-top: 10px;width:100%">
@@ -159,19 +159,20 @@
                 else {
                     $(".eleHide").fadeIn(200);
                     var html = "";
+                    $("#tbDatas").html('');
                     if (result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
-
-                            html += "<tr>";
                             for (var j = 0; j < result[i].length; j++) {
-                                html += "<td>" + result[i][j] + "</td>";
+                                html += "<td></td>";
                             }
-                            html += "</tr>";
+                            $("#tbDatas").append("<tr>" + html + "</tr>");
+                            for (var k = 0; k < result[i].length; k++) {
+                                $("#tbDatas tr:last td").eq(k).text(result[i][k]);
+                            }
                         }
                     }
                     if (result.length == 101)
-                        html += "<tr style='background-color:white;color:grey'><td colspan='100'> * 数据仅显示最多一百条数据</td></tr>";
-                    $("#tbDatas").html(html);
+                        $("#tbDatas").append("<tr style='background-color:white;color:grey'><td colspan='100'> * 数据仅显示最多一百条数据</td></tr>");
 
                 }
             }
