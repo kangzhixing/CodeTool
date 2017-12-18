@@ -3,28 +3,21 @@
     ViewBag.Title = "数据库查询";
 }
 <style type="text/css">
-    .eleHide {
-        display: none;
-    }
-
     .divContent {
         box-shadow: 0 0 10px grey;
         padding: 20px;
     }
 
-    #tbDatas tr:first-child {
+    #tbDatas thead {
         font-weight: bold;
+        background-color: darkgray;
     }
 
-    #tbDatas tr {
+    #tbDatas tbody {
         background-color: lightgray;
     }
 
-        #tbDatas tr:first-child {
-            background-color: darkgray;
-        }
-
-        #tbDatas tr:hover {
+        #tbDatas tbody tr:hover {
             background-color: darkgray;
         }
 
@@ -110,10 +103,10 @@
     $("body").keydown(function (e) {
         var scroll = 0;
         if (e.key == "ArrowLeft") {
-            ScrollTable(200);
+            ScrollTable(500);
         } else if (e.key == "ArrowRight") {
 
-            ScrollTable(-200);
+            ScrollTable(-500);
         }
     });
     var timer = null; //定义一个定时器
@@ -158,21 +151,28 @@
                 }
                 else {
                     $(".eleHide").fadeIn(200);
-                    var html = "";
-                    $("#tbDatas").html('');
+                    $("#divDatas").scrollLeft(0);
                     if (result.length > 0) {
+                        $("#tbDatas").html("<thead></thead><tbody></tbody>");
                         for (var i = 0; i < result.length; i++) {
-                            for (var j = 0; j < result[i].length; j++) {
-                                html += "<td></td>";
+                            if (i == 0) {
+                                $("#tbDatas thead").append("<tr></tr>");
                             }
-                            $("#tbDatas").append("<tr>" + html + "</tr>");
+                            else {
+                                $("#tbDatas tbody").append("<tr></tr>");
+                            }
+                            for (var j = 0; j < result[i].length; j++) {
+                                $("#tbDatas tr:last").append("<td></td>");
+                            }
                             for (var k = 0; k < result[i].length; k++) {
                                 $("#tbDatas tr:last td").eq(k).text(result[i][k]);
+
                             }
                         }
                     }
                     if (result.length == 101)
-                        $("#tbDatas").append("<tr style='background-color:white;color:grey'><td colspan='100'> * 数据仅显示最多一百条数据</td></tr>");
+                        $("#tbDatas").append("<tfoot><tr style='background-color:white;color:grey'><td colspan='100'> * 数据仅显示最多一百条数据</td></tr></tfoot>");
+
 
                 }
             }

@@ -160,6 +160,8 @@
     <Compile Include="common\ReflectMethod_Java.cs" />
     <Compile Include="common\Speech.cs" />
     <Compile Include="common\ViewPageAttribute.cs" />
+    <Compile Include="common\ZipUtil.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\ToolController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\CodeMakerController.cs" />
@@ -291,6 +293,8 @@
     <Content Include="Views\Tool\Speech.cshtml" />
     <Content Include="Views\Tool\Export.cshtml" />
     <Content Include="Views\Tool\Worm.cshtml" />
+    <Content Include="Views\Test\LakalaRefund.cshtml" />
+    <Content Include="Views\Test\LakalaConfirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

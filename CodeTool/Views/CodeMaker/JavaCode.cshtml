@@ -18,7 +18,8 @@
         <div>
             <button id="btnConnect" class="jk-button mr10">连接</button>
             <button id="btnGenerat" class="jk-button-disabled mr10" disabled="disabled">生成</button>
-            <button id="btnExport" class="jk-button-disabled" disabled="disabled">下载</button>
+            <button id="btnExport" class="jk-button-disabled mr10" disabled="disabled">下载</button>
+            <button id="btnExportAll" class="jk-button-disabled" style="width:100px" disabled="disabled">下载全部表</button>
         </div>
         <table style="margin-top: 10px;width:100%">
             <tr>
@@ -39,7 +40,7 @@
             <tr class="eleHide">
                 <td>命名空间：</td>
                 <td>
-                    <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="com.Fang.xxx.{0}" />
+                    <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="com.xxx.xxx.{0}" />
                 </td>
             </tr>
             <tr class="eleHide">
@@ -69,6 +70,15 @@
         <input name="fileName" />
         <input name="extension" value="java" />
     </form>
+    <form method="post" id="fmExportAll" style="display: none" action="/CodeMaker/DownloadAllFile">
+        <input name="Lang" />
+        <input name="ClassName" />
+        <input name="ConnectionString" />
+        <input name="Package" />
+        <input name="DbType" />
+        <input name="Type" />
+        <input name="extension" value="java" />
+    </form>
 </div>
 <script type="text/javascript">
 
@@ -94,6 +104,16 @@
         $("#fmExport").find("input[name=content]").val(encodeURIComponent(content));
         $("#fmExport").find("input[name=fileName]").val($("#txtClassName").val());
         $("#fmExport").submit();
+    });
+
+    $("#btnExportAll").bind("click", function () {
+        $("#fmExportAll").find("input[name=ConnectionString]").val(encodeURIComponent($("#txtConnectionString").val()));
+        $("#fmExportAll").find("input[name=Package]").val($("#txtPackage").val());
+        $("#fmExportAll").find("input[name=DbType]").val($("input:radio[checked=checked]").val());
+        $("#fmExportAll").find("input[name=Lang]").val("Java");
+        $("#fmExportAll").find("input[name=Type]").val($("#sltDataType").val());
+        $("#fmExportAll").find("input[name=ClassName]").val($("#txtClassName").val());
+        $("#fmExportAll").submit();
     });
 
     document.body.oncopy = function () {
@@ -129,11 +149,12 @@
                 $("#divCode").fadeIn(200);
                 $("#divCode").text(result);
                 $("#btnExport").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
+                $("#btnExportAll").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
                 if (type.indexOf('Xml') > 0) {
-                    $("#fmExport").find("input[name=extension]").val('xml');
+                    $("#fmExport,#fmExportAll").find("input[name=extension]").val('xml');
                 }
                 else {
-                    $("#fmExport").find("input[name=extension]").val('java');
+                    $("#fmExport,#fmExportAll").find("input[name=extension]").val('java');
                 }
             }
         });
@@ -154,7 +175,7 @@
     });
 
     $("#divCode").bind("mouseover", function () {
-        SelectText("divCode");
+        SelectText($(this));
     });
 
     $("#sltTables").bind("change", function () {
@@ -186,6 +207,7 @@
                 else {
                     $(".eleHide").fadeIn(200);
                     $("#btnGenerat").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
+                    $("#btnExportAll").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
                     var tables = $("#sltTables");
                     var html = "";
                     if (result.length > 0) {

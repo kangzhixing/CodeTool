@@ -169,27 +169,65 @@ namespace CodeTool.common
         private static List<JlFieldDescription> GetDatabaseColumns_SqlServer(string connectionString, string tableName)
         {
             var sql = @"
-                    WITH T AS
-                    (
-	                    SELECT
-		                    D.name AS TableName,
-		                    A.name AS Name,
-		                    B.name AS DbType,
-		                    COLUMNPROPERTY(A.ID,A.NAME,'PRECISION') AS Length,
-		                    (CASE WHEN A.ISNULLABLE=1 THEN 'true'ELSE 'false' END) AS IsNullable,
-							(CASE WHEN A.COLSTAT=1 THEN 'true'ELSE 'false' END) AS IsIdentity,
-		                    ISNULL(G.[VALUE],'') AS Description,
-                            colorder
-	                    FROM SYSCOLUMNS A LEFT JOIN SYSTYPES B
-	                    ON A.XTYPE=B.XUSERTYPE
-	                    INNER JOIN SYSOBJECTS D
-	                    ON A.ID=D.ID AND D.XTYPE IN ('V','U') AND D.NAME<>'DTPROPERTIES'
-	                    LEFT JOIN SYSCOMMENTS E
-	                    ON A.CDEFAULT=E.ID
-	                    LEFT JOIN SYS.EXTENDED_PROPERTIES G
-	                    ON A.ID=G.MAJOR_ID AND A.COLID = G.MINOR_ID
-                    )
-                    SELECT Name,DbType,Length,IsNullable,IsIdentity,Description FROM T WHERE TableName = '{0}' ORDER BY colorder";
+SELECT 
+    Name=C.name,
+    DbType=T.name,
+    PrimaryKey=ISNULL(IDX.PrimaryKey,N''),
+    IsIdentity=CASE WHEN C.is_identity=1 THEN N'true'ELSE N'false' END,
+    Length=C.max_length,
+    IsNullable=CASE WHEN C.is_nullable=1 THEN N'true'ELSE N'false' END,
+    Description=ISNULL(PFD.[value],N'')
+FROM sys.columns C
+    INNER JOIN sys.objects O
+        ON C.[object_id]=O.[object_id]
+            AND O.type='U'
+            AND O.is_ms_shipped=0
+    INNER JOIN sys.types T
+        ON C.user_type_id=T.user_type_id
+    LEFT JOIN sys.default_constraints D
+        ON C.[object_id]=D.parent_object_id
+            AND C.column_id=D.parent_column_id
+            AND C.default_object_id=D.[object_id]
+    LEFT JOIN sys.extended_properties PFD
+        ON PFD.class=1 
+            AND C.[object_id]=PFD.major_id 
+            AND C.column_id=PFD.minor_id
+--             AND PFD.name='Caption'  -- 字段说明对应的描述名称(一个字段可以添加多个不同name的描述)
+    LEFT JOIN sys.extended_properties PTB
+        ON PTB.class=1 
+            AND PTB.minor_id=0 
+            AND C.[object_id]=PTB.major_id
+--             AND PFD.name='Caption'  -- 表说明对应的描述名称(一个表可以添加多个不同name的描述) 
+    LEFT JOIN                       -- 索引及主键信息
+    (
+        SELECT 
+            IDXC.[object_id],
+            IDXC.column_id,
+            Sort=CASE INDEXKEY_PROPERTY(IDXC.[object_id],IDXC.index_id,IDXC.index_column_id,'IsDescending')
+                WHEN 1 THEN 'DESC' WHEN 0 THEN 'ASC' ELSE '' END,
+            PrimaryKey=CASE WHEN IDX.is_primary_key=1 THEN N'PRI'ELSE N'' END,
+            IndexName=IDX.Name
+        FROM sys.indexes IDX
+        INNER JOIN sys.index_columns IDXC
+            ON IDX.[object_id]=IDXC.[object_id]
+                AND IDX.index_id=IDXC.index_id
+        LEFT JOIN sys.key_constraints KC
+            ON IDX.[object_id]=KC.[parent_object_id]
+                AND IDX.index_id=KC.unique_index_id
+        INNER JOIN  -- 对于一个列包含多个索引的情况,只显示第1个索引信息
+        (
+            SELECT [object_id], Column_id, index_id=MIN(index_id)
+            FROM sys.index_columns
+            GROUP BY [object_id], Column_id
+        ) IDXCUQ
+            ON IDXC.[object_id]=IDXCUQ.[object_id]
+                AND IDXC.Column_id=IDXCUQ.Column_id
+                AND IDXC.index_id=IDXCUQ.index_id
+    ) IDX
+        ON C.[object_id]=IDX.[object_id]
+            AND C.column_id=IDX.column_id 
+			where O.name = '{0}'
+            order by c.column_id";
             sql = string.Format(sql, tableName);
 
             var dataTable = new DataTable();
@@ -202,7 +240,8 @@ namespace CodeTool.common
                 Length = JlConvert.TryToInt(row["Length"]),
                 IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString()),
                 IsIdentity = JlConvert.TryToBool(row["IsIdentity"].ToString()),
-                Description = HttpUtility.HtmlEncode(row["Description"].ToString())
+                Description = HttpUtility.HtmlEncode(row["Description"].ToString()),
+                ColumnKey = row["PrimaryKey"].ToString()
             }).ToList();
         }
 

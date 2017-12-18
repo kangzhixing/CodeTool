@@ -37,30 +37,37 @@
             <span><label class="cp">大写: <input type="checkbox" id="cboCapitals" class="cbx" /></label></span>
         </p>
     </div>
-    <pre id="divResult" class="divContent" style="display: none">
+    <pre id="divResult" class="divContent">
     </pre>
 </div>
 <script type="text/javascript">
-    $("#btnGenerat").bind("click", function () {
-        var count = $("#txtCnt").val();
-        if (count.trim() == "" || !IsNumber(count)) {
-            $("#txtCnt").focus();
-            return;
-        } else {
-            $("#divResult").fadeIn(200);
-            var isHyphen = $("#cboHyphen").is(":checked");
-            var isCapitals = $("#cboCapitals").is(":checked");
-
-            var html = "";
-            for (var i = 0; i < parseInt(count); i++) {
-                var guid = newGuid();
-                var result = isHyphen ? guid : guid.replaceAll("-", "");
-                html += (isCapitals ? result.toUpperCase() : result.toLowerCase()) + "\n";
-            }
-            $("#divResult").html(html);
-        }
+    $(function () {
+        NewGuid();
     });
 
+    $("#btnGenerat").bind("click", function () {
+        NewGuid();
+    });
+
+    function NewGuid() {
+        if (!IsNumber($("#txtCnt").val())) {
+            $("#txtCnt").focus();
+            return;
+        }
+        if ($("#txtCnt").val().trim() == "") {
+            $("#txtCnt").val(1);
+        }
+        var isHyphen = $("#cboHyphen").is(":checked");
+        var isCapitals = $("#cboCapitals").is(":checked");
+
+        var html = "";
+        for (var i = 0; i < parseInt($("#txtCnt").val()); i++) {
+            var guid = newGuid();
+            var result = isHyphen ? guid : guid.replaceAll("-", "");
+            html += (isCapitals ? result.toUpperCase() : result.toLowerCase()) + "\n";
+        }
+        $("#divResult").html(html);
+    }
 
     $("#txtCnt").keypress(function (e) {
         if (!IsNumber(e.key)) {
@@ -69,7 +76,7 @@
     });
 
     $("#divResult").bind("mouseover", function () {
-        SelectText("divResult");
+        SelectText($(this));
     });
     //).hover(function () {
     //    SelectText($(this).attr("id"));

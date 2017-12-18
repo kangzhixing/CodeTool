@@ -42,5 +42,11 @@ namespace CodeTool.Models.CoderMaker
         /// 数据库类型
         /// </summary>
         public string DbType { get; set; }
+
+        /// <summary>
+        /// 文件扩展名
+        /// </summary>
+        /// 
+        public string Extension { get; set; }
     }
 }

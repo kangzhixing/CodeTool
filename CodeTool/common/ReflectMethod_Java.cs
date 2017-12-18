@@ -184,7 +184,7 @@ public interface {2}Mapper{{
             inModel.FieldDescriptions.ToList().ForEach(f =>
             {
                 field_Basic.AppendLine(string.Format("    <{0} column=\"" + JlString.ToUpperFirst(f.Name) + "\" jdbcType=\"" + JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper() + "\" property=\"" + f.Name.ToLower() + "\" />",
-                    !string.IsNullOrEmpty(f.ColumnKey) ? "id" : "result"));
+                    f.ColumnKey == "PRI" ? "id" : "result"));
 
                 fieldParams.Append(f.Name + ", ");
                 if (fieldParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
@@ -224,7 +224,7 @@ public interface {2}Mapper{{
             var fieldParameter = new StringBuilder();
             inModel.FieldDescriptions.Where(f => !f.IsIdentity).ToList().ForEach(f =>
             {
-                field.AppendLine(" + \"[" + f.Name + "], \"");
+                field.AppendLine("            + \"[" + f.Name + "], \"");
                 fieldValue.AppendLine("            + \"@" + f.Name + ", \"");
                 if (JlDbTypeMap.Map4J(f.DbType) == "Date")
                     fieldParameter.AppendLine(string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.get{0}().getTime()));", f.Name, JlString.ToLowerFirst(className)));
@@ -245,13 +245,13 @@ public interface {2}Mapper{{
     public static boolean Add(String connectionString, {0} {1}) throws Exception {{
         String sql = ""INSERT INTO [{5}]( ""
 {2}
-        + "") VALUES ( ""
+            + "") VALUES ( ""
 {3})"";
 		
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {4}		
-        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", className, JlString.ToLowerFirst(className), field.ToString().Substring(0, field.Length - 5) + "\"", fieldValue.ToString().Substring(0, fieldValue.Length - 5), fieldParameter, tableName);
@@ -296,7 +296,7 @@ public interface {2}Mapper{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {4}		
-        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", className,
@@ -337,7 +337,7 @@ public interface {2}Mapper{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {5}		
-        int i = JlDatabase.executeNonQuery(connectionString, sql, parameters);
+        int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
     }}", JlDbTypeMap.Map4J(f.DbType),
@@ -391,7 +391,7 @@ public interface {2}Mapper{{
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
 {3}		
-        CachedRowSet crs = JlDatabase.fill(connectionString, sql, parameters);
+        CachedRowSet crs = SlDatabase.fill(connectionString, sql, parameters);
 
         while (crs.next()) {{
             {5} model = new {5}();
@@ -444,7 +444,7 @@ public interface {2}Mapper{{
             var fieldDataAccess = string.Format(@"
         List<{0}> list = new ArrayList<{0}>();
 
-        CachedRowSet crs = JlDatabase.fill(connectionString, sql);
+        CachedRowSet crs = SlDatabase.fill(connectionString, sql);
 
         while (crs.next()) {{
             {0} model = new {0}();
@@ -531,7 +531,7 @@ public interface {2}Mapper{{
             var fieldDataAccess = string.Format(@"
         List<{0}> list = new ArrayList<{0}>();
 
-        CachedRowSet crs = JlDatabase.fill(connectionString, sql);
+        CachedRowSet crs = SlDatabase.fill(connectionString, sql);
 
         while (crs.next()) {{
             {0} model = new {0}();

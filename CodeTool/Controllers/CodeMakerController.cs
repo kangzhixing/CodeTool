@@ -12,6 +12,8 @@ using JasonLib;
 using JasonLib.Web.Mvc;
 using JasonLib.Data;
 using System.Collections.Generic;
+using System.IO;
+using NPOI.OpenXml4Net.OPC;
 
 namespace CodeTool.Controllers
 {
@@ -88,6 +90,113 @@ namespace CodeTool.Controllers
                     Content = JlJson.ToJson(new { Message = ex.Message })
                 };
             }
+        }
+
+        public void DownloadAllFile()
+        {
+            var inModel = new CodeMakerGeneratCodeIn();
+            UpdateModel(inModel);
+
+            inModel.Lang = HttpUtility.UrlDecode(inModel.Lang);
+            inModel.ClassName = HttpUtility.UrlDecode(inModel.ClassName);
+            inModel.ConnectionString = HttpUtility.UrlDecode(inModel.ConnectionString);
+            inModel.Package = HttpUtility.UrlDecode(inModel.Package);
+            inModel.DbType = HttpUtility.UrlDecode(inModel.DbType);
+            inModel.Extension = HttpUtility.UrlDecode(inModel.Extension);
+
+            var databaseTables = CommonMethod.GetDatabaseTables(inModel.ConnectionString, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), inModel.DbType));
+
+            var zipDir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + JlConfig.GetValue<string>("SaveFilePath") + "zip\\";
+            var zipFileName = JlGuid.NewGuid();
+            var pathName = zipDir + zipFileName + "\\";
+
+            if (databaseTables.Any())
+            {
+                if (!Directory.Exists(zipDir))
+                {
+                    Directory.CreateDirectory(zipDir);
+                }
+
+                Directory.CreateDirectory(pathName);
+            }
+
+            databaseTables.ForEach(table =>
+            {
+                var databaseColumns = CommonMethod.GetDatabaseColumns(inModel.ConnectionString, table, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), inModel.DbType));
+
+                var outModel = new CodeMakerGeneratCodeOut
+                {
+                    CodeMakerGeneratCodeIn = inModel,
+                    FieldDescriptions = databaseColumns
+                };
+                #region 通过反射调用方法
+                var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass") + "_" + inModel.Lang);
+                //声明创建当前类实例
+                var model = Activator.CreateInstance(type);
+                var method = type.GetMethod(inModel.Type);
+
+                var result = method.Invoke(model, new object[] { outModel }).ToString();
+
+                #endregion
+
+                //下载文件到文件夹内
+                var fileName = string.Empty;
+
+                if (inModel.Lang.ToLower() == "dotnet")
+                {
+                    if (inModel.Type.ToLower().StartsWith("dao"))
+                    {
+                        fileName = table + "Dao.cs";
+                    }
+                    else
+                    {
+                        fileName = table + ".cs";
+                    }
+                }
+                else
+                {
+                    if (inModel.Type.ToLower().EndsWith("xml"))
+                    {
+                        fileName = JlString.ToLowerFirst(table) + "Mapper.xml";
+                    }
+                    else if (inModel.Type.ToLower().EndsWith("mapper"))
+                    {
+                        fileName = JlString.ToLowerFirst(table) + "Mapper.java";
+                    }
+                    else if (inModel.Type.ToLower().StartsWith("dao"))
+                    {
+                        fileName = JlString.ToLowerFirst(table) + "Dao.java";
+                    }
+                    else
+                    {
+                        fileName = JlString.ToLowerFirst(table) + ".java";
+                    }
+                }
+
+                var fullName = pathName + fileName;
+                if (!System.IO.File.Exists(fullName))
+                {
+                    System.IO.File.WriteAllText(fullName, result);
+                }
+            });
+
+            if (databaseTables.Any())
+            {
+                ZipUtil.ZipDirectory(pathName, zipDir, zipFileName);
+                new DirectoryInfo(pathName).Delete(true);
+            }
+            FileStream fis = new FileStream(zipDir + zipFileName + ".zip", FileMode.Open);
+            Response.Clear();
+            Response.Buffer = true;
+            Response.ContentType = "application/x-zip-compressed";
+            Response.AddHeader("content-disposition", "attachment;filename=" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip");
+            byte[] pReadByte = new byte[0];
+            BinaryReader r = new BinaryReader(fis);
+            r.BaseStream.Seek(0, SeekOrigin.Begin);    //将文件指针设置到文件开
+            pReadByte = r.ReadBytes((int)r.BaseStream.Length);
+            Response.BinaryWrite(pReadByte);
+            Response.Flush();
+            Response.End();
 
         }
 

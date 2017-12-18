@@ -18,7 +18,8 @@
         <div>
             <button id="btnConnect" class="jk-button mr10">连接</button>
             <button id="btnGenerat" class="jk-button-disabled mr10" disabled="disabled">生成</button>
-            <button id="btnExport" class="jk-button-disabled" disabled="disabled">下载</button>
+            <button id="btnExport" class="jk-button-disabled mr10" disabled="disabled">下载</button>
+            <button id="btnExportAll" class="jk-button-disabled" style="width:100px" disabled="disabled">下载全部表</button>
         </div>
         <table style="margin-top: 10px;width:100%">
             <tr>
@@ -39,7 +40,7 @@
             <tr class="eleHide">
                 <td>命名空间: </td>
                 <td>
-                    <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="JasonLib.{0}" />
+                    <input type="text" id="txtPackage" style="max-width: 686px;width: 100%" value="xxx.{0}" />
                 </td>
             </tr>
             <tr class="eleHide">
@@ -67,6 +68,15 @@
     <form method="post" id="fmExport" style="display: none" action="/CodeMaker/DownloadFile">
         <input name="content" />
         <input name="fileName" />
+        <input name="extension" value="cs" />
+    </form>
+    <form method="post" id="fmExportAll" style="display: none" action="/CodeMaker/DownloadAllFile">
+        <input name="Lang" />
+        <input name="ClassName" />
+        <input name="ConnectionString" />
+        <input name="Package" />
+        <input name="DbType" />
+        <input name="Type" />
         <input name="extension" value="cs" />
     </form>
 </div>
@@ -111,6 +121,16 @@
         $("#fmExport").submit();
     });
 
+    $("#btnExportAll").bind("click", function () {
+        $("#fmExportAll").find("input[name=ConnectionString]").val(encodeURIComponent($("#txtConnectionString").val()));
+        $("#fmExportAll").find("input[name=Package]").val($("#txtPackage").val());
+        $("#fmExportAll").find("input[name=DbType]").val($("input:radio[checked=checked]").val());
+        $("#fmExportAll").find("input[name=Lang]").val("Dotnet");
+        $("#fmExportAll").find("input[name=Type]").val($("#sltDataType").val());
+        $("#fmExportAll").find("input[name=ClassName]").val($("#txtClassName").val());
+        $("#fmExportAll").submit();
+    });
+
     $("#btnGenerat").bind("click", function () {
         var connectionString = $("#txtConnectionString").val();
         var table = $("#sltTables").val();
@@ -134,12 +154,13 @@
                 $("#divCode").fadeIn(200);
                 $("#divCode").text(result);
                 $("#btnExport").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
+                $("#btnExportAll").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
             }
         });
     });
 
     $("#divCode").bind("mouseover", function () {
-        SelectText("divCode");
+        SelectText($(this));
     });
 
     $("#sltTables").bind("change", function () {
@@ -171,6 +192,7 @@
                 else {
                     $(".eleHide").fadeIn(200);
                     $("#btnGenerat").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
+                    $("#btnExportAll").addClass("jk-button").removeClass("jk-button-disabled").removeAttr("disabled", "");
                     var tables = $("#sltTables");
                     var html = "";
                     if (result.length > 0) {
