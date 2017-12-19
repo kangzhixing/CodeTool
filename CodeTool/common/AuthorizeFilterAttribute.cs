@@ -33,20 +33,38 @@ namespace CodeTool.common
             var host = filterContext.HttpContext.Request.UserHostAddress;
             var path = filterContext.HttpContext.Request.Path.ToLower();
             //需要验证的页面链接
-            var authorizePageList = new List<string>() { "/test/lakalarefund", "/test/lakalaconfirm" };
-            if (authorizePageList.Contains(path))
-            {
-                var ipList = new List<string>() {
-                    "127.0.0.1",
-                    "10.2.131.161",
-                    "10.2.131.165" };
 
-                return ipList.Contains(host);
+            if (!AdminDic.Contains(host) && AuthorizeDic.ContainsKey(path))
+            {
+                return AuthorizeDic[path].Contains(host);
             }
             else
             {
                 return true;
             }
         }
+
+        public static Dictionary<string, List<string>> AuthorizeDic = new Dictionary<string, List<string>> {
+            {
+                "/test/lakalarefund", new List<string>(){
+                    "10.2.131.155", //韩倩
+                    "10.2.131.165" //林雪晴
+                }
+            },
+            { "/test/lakalaconfirm", new List<string>(){
+                    "10.2.131.155",
+                    "10.2.131.165"
+                }
+            },
+            { "/test/bizstatement", new List<string>(){
+                    "10.2.131.155"
+                }
+            }
+        };
+
+        public static List<string> AdminDic = new List<string> {
+                    "127.0.0.1",
+                    "10.2.131.161",
+        };
     }
 }

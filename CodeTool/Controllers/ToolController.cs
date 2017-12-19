@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Web;
-using System.Web.Caching;
-using System.Web.Mvc;
-using CodeTool.common;
-using JasonLib.Web.Mvc;
-using JasonLib.Web;
-using System.Text;
-using System.IO;
+﻿using CodeTool.common;
 using JasonLib;
 using JasonLib.Data;
+using JasonLib.Web;
+using JasonLib.Web.Mvc;
+using System;
+using System.ComponentModel;
 using System.Data;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using NPOI.HSSF.UserModel;
+using System.Text;
+using System.Web;
+using System.Web.Mvc;
 
 namespace CodeTool.Controllers
 {

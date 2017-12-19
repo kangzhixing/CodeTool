@@ -269,3 +269,4 @@ CodeTool/Views/Test/LakalaConfirm.cshtml
 CodeTool/Views/Test/LakalaRefund.cshtml
 CodeTool/Views/Tool/Worm.cshtml
 *.zip
+CodeTool/Views/Test/BizStatement.cshtml

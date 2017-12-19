@@ -32,7 +32,7 @@ input[type=text] {
 }
 
 .divTop {
-    z-index: 100;
+    z-index: 10001;
     background: #fff;
     width: 100%;
     position: fixed;
@@ -49,6 +49,7 @@ input[type=text] {
     box-shadow: 0 0 10px grey;
     display: block;
     padding: 10px 20px;
+    border: 1px solid lightgrey\9;
 }
 
 .divCondition {
@@ -56,7 +57,8 @@ input[type=text] {
 }
 
 #divTopPage {
-    transform: translateY(-65px);
+    position: relative;
+    top:-65px;
     max-width: 1000px;
     width: 90%;
     margin: auto auto;
@@ -121,8 +123,7 @@ input[type=text] {
 }
 
 #txtTopSearch {
-    margin: 5px 0 0 15px;
-    padding: 0px;
+    padding: 0;
     width: 100%;
     border: none;
     height: 100%;
@@ -168,12 +169,23 @@ input[type=text] {
 }
 
 .divSearchResult {
+    max-width: 180px\9;
+    width: 30%\9;
+    height: 100px\9;
+    line-height: 100px\9;
+    margin: 50px 30px 0 30px\9;
+    background: #dddddd\9;
+    display: inline-block\9;
+    box-shadow: 0 0 10px grey;
     transition: 0.2s;
     text-align: center;
     cursor: pointer;
     word-break: break-all;
     word-wrap: break-word;
 }
+    .divSearchResult:hover {
+        background: #d5d5d5\9;
+    }
 
 #div404 {
     text-align: center;
@@ -201,6 +213,9 @@ input[type=text] {
 
 .divContent {
     font-size: 12px;
+    box-shadow: 0 0 10px grey;
+    border:1px solid lightgrey\9;
+    padding: 20px;
 }
 
 .dn {
