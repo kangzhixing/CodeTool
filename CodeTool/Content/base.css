@@ -396,6 +396,8 @@ input[type=text] {
     font-size: 16px;
     font-family: "Microsoft YaHei";
     outline: none;
+    word-break: keep-all;
+    margin-top: 10px;
 }
 
 .jk-button-disabled {
@@ -410,6 +412,8 @@ input[type=text] {
     font-size: 16px;
     font-family: "Microsoft YaHei";
     outline: none;
+    word-break: keep-all;
+    margin-top: 10px;
 }
 
 .jk-button:hover {
