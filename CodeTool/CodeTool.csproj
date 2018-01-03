@@ -178,6 +178,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\favicon.ico" />
     <Content Include="Content\images\menu.png" />
     <Content Include="Content\images\search.png" />
     <Content Include="Content\nprogress.css" />
@@ -295,6 +296,8 @@
     <Content Include="Views\Tool\Worm.cshtml" />
     <Content Include="Views\Test\LakalaRefund.cshtml" />
     <Content Include="Views\Test\LakalaConfirm.cshtml" />
+    <Content Include="Views\Test\BizStatement.cshtml" />
+    <Content Include="Views\Test\FormSubmit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

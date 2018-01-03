@@ -176,7 +176,6 @@ input[type=text] {
     margin: 50px 30px 0 30px\9;
     background: #dddddd\9;
     display: inline-block\9;
-    box-shadow: 0 0 10px grey;
     transition: 0.2s;
     text-align: center;
     cursor: pointer;

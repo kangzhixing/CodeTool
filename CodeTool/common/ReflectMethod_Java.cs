@@ -126,7 +126,7 @@ public class {1}Dao{{
             var fieldParams = new StringBuilder();
             var field_SqlContent = new StringBuilder();
             var field = new JlFieldDescription();
-            if (inModel.FieldDescriptions.Count(f => f.ColumnKey == "PRI") == 1)
+            if (inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI"))
             {
                 field = inModel.FieldDescriptions.First(f => f.ColumnKey == "PRI");
             }
@@ -145,6 +145,8 @@ public interface {2}Mapper{{
 
     {7}By{3}({4} {5});
 
+    List<{2}> selectAll();
+
     int deleteBy{3}({4} {5});
 
     int updateBy{3}({2} {6});
@@ -161,7 +163,7 @@ public interface {2}Mapper{{
             JlDbTypeMap.Map4J(field.DbType),
             JlString.ToLowerFirst(field.Name),
             JlString.ToLowerFirst(className),
-            !string.IsNullOrEmpty(field.ColumnKey) ? className + " select" : "List<" + className + "> select"));
+            inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI") ? className + " select" : "List<" + className + "> selectList"));
 
             return codeStr.ToString();
         }
@@ -577,7 +579,7 @@ public interface {2}Mapper{{
             if (inModel.FieldDescriptions.Any())
             {
                 var field = new JlFieldDescription();
-                if (inModel.FieldDescriptions.Count(f => f.ColumnKey == "PRI") == 1)
+                if (inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI"))
                 {
                     field = inModel.FieldDescriptions.First(f => f.ColumnKey == "PRI");
                 }
@@ -587,12 +589,18 @@ public interface {2}Mapper{{
                 }
 
                 result.AppendLine(string.Format(
-   @"  <select id=""selectBy{1}"" parameterType=""{4}"" resultMap=""BaseResultMap"">
+   @"  <select id=""{6}By{1}"" parameterType=""{4}"" resultMap=""BaseResultMap"">
     select
     <include refid=""Base_Column_List"" />
     from {0}
     where {5} = #{{{2},jdbcType={3}}}
-  </select>", tableName, JlString.ToUpperFirst(field.Name), field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name));
+  </select>
+  <select id=""selectAll"" resultMap=""BaseResultMap"">
+    select
+    <include refid=""Base_Column_List"" />
+    from {0}
+  </select>", tableName, JlString.ToUpperFirst(field.Name), field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name,
+  inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI")?"select": "selectList"));
             }
             return result.ToString();
         }

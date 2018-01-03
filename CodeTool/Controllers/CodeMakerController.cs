@@ -157,19 +157,19 @@ namespace CodeTool.Controllers
                 {
                     if (inModel.Type.ToLower().EndsWith("xml"))
                     {
-                        fileName = JlString.ToLowerFirst(table) + "Mapper.xml";
+                        fileName = table + "Mapper.xml";
                     }
                     else if (inModel.Type.ToLower().EndsWith("mapper"))
                     {
-                        fileName = JlString.ToLowerFirst(table) + "Mapper.java";
+                        fileName = table + "Mapper.java";
                     }
                     else if (inModel.Type.ToLower().StartsWith("dao"))
                     {
-                        fileName = JlString.ToLowerFirst(table) + "Dao.java";
+                        fileName = table + "Dao.java";
                     }
                     else
                     {
-                        fileName = JlString.ToLowerFirst(table) + ".java";
+                        fileName = table + ".java";
                     }
                 }
 

@@ -304,7 +304,7 @@ namespace {0}
             if (dataTable.Rows.Count > 0)
             {{
                 var row = dataTable.Rows[0];
-                return new En.ConsumeType()
+                return new En.{4}()
                 {{
 {5}
                 }};
