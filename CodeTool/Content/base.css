@@ -319,6 +319,10 @@ input[type=text] {
     margin-top: 50px;
 }
 
+.mb50 {
+    margin-bottom: 50px;
+}
+
 .w20 {
     width: 20px;
 }

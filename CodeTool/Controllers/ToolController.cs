@@ -43,6 +43,13 @@ namespace CodeTool.Controllers
             return View();
         }
 
+        [ViewPage]
+        [Description("匿名投票")]
+        public ActionResult Vote()
+        {
+            return View();
+        }
+
         public ActionResult EncodeString(string str, string encoding)
         {
             try

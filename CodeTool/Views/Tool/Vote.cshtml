@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "匿名投票";
+}
+<style type="text/css">
+    .divPage .eleHide {
+        display: none;
+    }
+
+    .line {
+        padding: 30px 0 30px 50px;
+        margin: auto auto;
+    }
+
+    .finish {
+        color: lightgrey;
+        font-size: 50px;
+        font-weight: 600;
+        height: 104px;
+        line-height: 104px;
+    }
+
+    .vote {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        box-shadow: 0 0 50px grey;
+        border-radius: 100px;
+        cursor: pointer;
+    }
+
+    #divResult .vote {
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+        box-shadow: 0 0 20px grey;
+        margin: 30px 15px;
+    }
+
+    .vote:hover {
+        box-shadow: 0 0 50px blue;
+    }
+
+    .voteAgree {
+        background-color: white;
+    }
+
+    .voteDisagree {
+        background-color: #505050;
+    }
+</style>
+<div class="divPage">
+    <div class="divTitleText"></div>
+    <div class="divCondition">
+        <label>人数：</label><input type="text" id="txtNum" class="mr10" style="max-width: 50px;height:25px" value="2" />
+        <button id="btnVote" class="jk-button" style="width:110px;position:relative;top:2px;">开始投票</button>
+
+    </div>
+    <div id="divVotes" class="dn">
+        <div id="voteLines"></div>
+    </div>
+    <div id="divResult" class="divContent dn">
+        <div id="result"></div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $("#btnVote").bind("click", function () {
+        $("#voteLines,#result").html('');
+        $("#divVotes").removeClass('dn');
+        $("#divResult").addClass('dn');
+        if ($("#txtNum").val().trim() == "" || parseInt($("#txtNum").val().trim()) < 1) {
+            $("#txtNum").val(2);
+        }
+        for (var i = 0; i < parseInt($("#txtNum").val()); i++) {
+            if ($(".line").length == 0) $("#voteLines").append('<div style= "border-top:dashed 1px lightgrey" ></div>');
+
+            $("#voteLines").append('<div class="line"><div class="vote voteAgree mr50"></div><div class="vote voteDisagree"></div><div class="finish dn">OK</div></div>');
+            $("#voteLines").append('<div style= "border-top:dashed 1px lightgrey" ></div>');
+        }
+    });
+
+    $("#voteLines").on("click", ".vote", function () {
+        $(this).parent().find(".vote").hide();
+        $(this).parent().find(".finish").removeClass('dn');
+        $(this).remove();
+
+        if ($("#divVotes .dn").length == 0) {
+            $("#voteLines").append('<div class="line"><div class="finish cp" onclick="ShowResult()">查看结果</div></div><div style= "border-top:dashed 1px lightgrey" ></div>');
+        }
+    });
+
+    function ShowResult() {
+        $("#divVotes").addClass('dn');
+        $("#divResult").removeClass('dn');
+
+        var agreeLen = 0;
+        var disAgreeLen = 0;
+
+        for (var i = 0; i < $("#divVotes .voteDisagree").length; i++) {
+            $("#result").append("<div class='vote voteAgree' style='display:none'></div>");
+        }
+
+        for (var i = 0; i < $("#divVotes .voteAgree").length; i++) {
+            $("#result").append("<div class='vote voteDisagree' style='display:none'></div>");
+        }
+
+        $("#result .vote").each(function (i) {
+            setTimeout(function () {
+                $("#result .vote").eq(i).fadeIn(1000);
+            }, i * 1500)
+
+        });
+    }
+
+</script>
