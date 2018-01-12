@@ -13,7 +13,7 @@ input[type=text] {
 }
 
 .mask {
-    z-index: 10000;
+    z-index: 90;
     background-color: #cfcfcf;
     filter: alpha(opacity=80); /*支持 IE 浏览器*/
     -moz-opacity: 0.80; /*支持 FireFox 浏览器*/
@@ -32,7 +32,7 @@ input[type=text] {
 }
 
 .divTop {
-    z-index: 10001;
+    z-index: 100;
     background: #fff;
     width: 100%;
     position: fixed;
