@@ -28,7 +28,7 @@ public class {1} {{
             {
                 if (!string.IsNullOrEmpty(f.Description))
                     result.AppendLine("    //" + f.Description.Replace("\n", "  "));
-                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + f.Name.ToLower() + @";
+                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + JlString.ToLowerFirst(f.Name) + @";
 ");
 
                 getterAndSetter.AppendLine(string.Format(@"    public {2} get{1}() {{
@@ -37,7 +37,7 @@ public class {1} {{
     public void set{1}({2} {0}) {{
         this.{0} = {0};
     }}
-", f.Name.ToLower(), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
+", JlString.ToLowerFirst(f.Name), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
 
             }
             result.Append(getterAndSetter);
@@ -185,14 +185,14 @@ public interface {2}Mapper{{
 
             inModel.FieldDescriptions.ToList().ForEach(f =>
             {
-                field_Basic.AppendLine(string.Format("    <{0} column=\"" + JlString.ToUpperFirst(f.Name) + "\" jdbcType=\"" + JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper() + "\" property=\"" + f.Name.ToLower() + "\" />",
+                field_Basic.AppendLine(string.Format("    <{0} column=\"" + JlString.ToUpperFirst(f.Name) + "\" jdbcType=\"" + JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper() + "\" property=\"" + JlString.ToLowerFirst(f.Name) + "\" />",
                     f.ColumnKey == "PRI" ? "id" : "result"));
 
-                fieldParams.Append(f.Name + ", ");
                 if (fieldParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
                 {
                     fieldParams.Append("\r\n    ");
                 }
+                fieldParams.Append(f.Name + ", ");
             });
 
             field_SqlContent.Append(GenerateCode_Java.MybatisSelect(inModel));
@@ -599,7 +599,7 @@ public interface {2}Mapper{{
     select
     <include refid=""Base_Column_List"" />
     from {0}
-  </select>", tableName, JlString.ToUpperFirst(field.Name), field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name,
+  </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name,
   inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI")?"select": "selectList"));
             }
             return result.ToString();
@@ -619,7 +619,7 @@ public interface {2}Mapper{{
             }
             inModel.FieldDescriptions.Where(f => f.ColumnKey != "PRI").ToList().ForEach(f =>
             {
-                field_UpdateParams.Append(string.Format("{2} = #{{{0},jdbcType={1}}}, ", f.Name.ToLower(), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper(), f.Name));
+                field_UpdateParams.Append(string.Format("{2} = #{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper(), f.Name));
                 if (field_UpdateParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
                 {
                     field_UpdateParams.Append("\r\n        ");
@@ -628,7 +628,7 @@ public interface {2}Mapper{{
                 field_UpdateParamsSelective.AppendLine(string.Format(
 @"      <if test=""{0} != null"">
         {1} = #{{{0},jdbcType={2}}},
-      </if>", f.Name.ToLower(), f.Name, JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
+      </if>", JlString.ToLowerFirst(f.Name), f.Name, JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
             });
 
             var field = new JlFieldDescription();
@@ -652,7 +652,7 @@ public interface {2}Mapper{{
     <set>
 {5}    </set>
     where {1} = #{{{2},jdbcType={3}}}
-  </update>", tableName, field.Name, field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
+  </update>", tableName, field.Name, JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
                 field_UpdateParamsSelective, field_UpdateParams.ToString().TrimEnd().Substring(0, field_UpdateParams.ToString().TrimEnd().Length - 1), JlString.ToUpperFirst(field.Name)));
             return result.ToString();
         }
@@ -671,17 +671,17 @@ public interface {2}Mapper{{
             }
             inModel.FieldDescriptions.Where(f => !f.IsIdentity).ToList().ForEach(f =>
             {
-                field_Params.Append(f.Name + ", ");
                 if (field_Params.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
                 {
                     field_Params.Append("\r\n    ");
                 }
+                field_Params.Append(f.Name + ", ");
 
-                field_InsertParams.Append(string.Format("#{{{0},jdbcType={1}}}, ", f.Name.ToLower(), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
                 if (field_InsertParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
                 {
                     field_InsertParams.Append("\r\n    ");
                 }
+                field_InsertParams.Append(string.Format("#{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
             });
 
             result.AppendLine(string.Format(
@@ -717,7 +717,7 @@ public interface {2}Mapper{{
 @"  <delete id=""deleteBy{1}"" parameterType=""{4}"">
     delete from {0}
     where {5} = #{{{2},jdbcType={3}}}
-  </delete>", tableName, JlString.ToUpperFirst(field.Name), field.Name.ToLower(), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name));
+  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name));
 
             return result.ToString();
         }
