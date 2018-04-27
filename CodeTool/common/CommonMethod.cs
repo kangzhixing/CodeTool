@@ -77,6 +77,10 @@ namespace CodeTool.common
                     {
                         return GetDatabaseColumns_SqlServer(connectionString, tableName);
                     }
+                case JlDatabaseType.PostgreSql:
+                    {
+                        return GetDatabaseColumns_PostgreSql(connectionString, tableName);
+                    }
                 default: return null;
             }
         }
@@ -92,6 +96,10 @@ namespace CodeTool.common
                 case JlDatabaseType.SqlServer:
                     {
                         return GetDatabaseTables_SqlServer(connectionString);
+                    }
+                case JlDatabaseType.PostgreSql:
+                    {
+                        return GetDatabaseTables_PostgreSql(connectionString);
                     }
                 default: return null;
             }
@@ -164,6 +172,17 @@ namespace CodeTool.common
             JlDatabase.Fill(connectionString, sql, dataTable);
 
             return dataTable.AsEnumerable().Select(row => row["Name"].ToString()).ToList();
+        }
+
+        private static List<string> GetDatabaseTables_PostgreSql(string connectionString)
+        {
+            var sql = @"select relname as Name,cast(obj_description(relfilenode,'pg_class') as varchar) as comment from pg_class c 
+where  relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%' order by relname";
+
+            var ds = new DataSet();
+            JlDatabase.Fill(connectionString, sql, ds, null, JlDatabaseType.PostgreSql);
+
+            return ds.Tables[0].AsEnumerable().Select(row => row["Name"].ToString()).ToList();
         }
 
         private static List<JlFieldDescription> GetDatabaseColumns_SqlServer(string connectionString, string tableName)
@@ -264,6 +283,47 @@ FROM sys.columns C
                 IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString().ToLower() == "yes"),
                 IsIdentity = JlConvert.TryToBool(row["Extra"].ToString().Contains("auto_increment")),
                 ColumnKey = row["COLUMN_KEY"].ToString(),
+                Description = HttpUtility.HtmlEncode(row["Description"].ToString())
+            }).ToList();
+        }
+
+        private static List<JlFieldDescription> GetDatabaseColumns_PostgreSql(string connectionString, string tableName)
+        {
+            var dbName = connectionString.Split(new[] { "database=" }, StringSplitOptions.RemoveEmptyEntries)[1].Split(';')[0];
+            var sql = @"
+select ordinal_position as Colorder,column_name as Name,data_type as DbType,
+coalesce(character_maximum_length,numeric_precision,-1) as Length,numeric_scale as Scale,
+case is_nullable when 'NO' then 0 else 1 end as IsNullable,column_default as DefaultVal,
+case  when position('nextval' in column_default)>0 then 1 else 0 end as IsIdentity, 
+case when b.pk_name is null then 0 else 1 end as IsPK,c.DeText Description
+from information_schema.columns 
+left join (
+    select pg_attr.attname as colname,pg_constraint.conname as pk_name from pg_constraint  
+    inner join pg_class on pg_constraint.conrelid = pg_class.oid 
+    inner join pg_attribute pg_attr on pg_attr.attrelid = pg_class.oid and  pg_attr.attnum = pg_constraint.conkey[1] 
+    inner join pg_type on pg_type.oid = pg_attr.atttypid
+    where pg_class.relname = '{0}' and pg_constraint.contype='p' 
+) b on b.colname = information_schema.columns.column_name
+left join (
+    select attname,description as DeText from pg_class
+    left join pg_attribute pg_attr on pg_attr.attrelid= pg_class.oid
+    left join pg_description pg_desc on pg_desc.objoid = pg_attr.attrelid and pg_desc.objsubid=pg_attr.attnum
+    where pg_attr.attnum>0 and pg_attr.attrelid=pg_class.oid and pg_class.relname='{0}'
+)c on c.attname = information_schema.columns.column_name
+where table_schema='public' and table_name='{0}' order by ordinal_position asc";
+            sql = string.Format(sql, tableName);
+
+            var ds = new DataSet();
+            JlDatabase.Fill(connectionString, sql, ds, null, JlDatabaseType.PostgreSql);
+
+            return ds.Tables[0].AsEnumerable().Select(row => new JlFieldDescription()
+            {
+                Name = row["Name"].ToString(),
+                DbType = row["DbType"].ToString(),
+                Length = JlConvert.TryToInt(row["Length"]),
+                IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString() == "1"),
+                IsIdentity = JlConvert.TryToBool(row["IsIdentity"].ToString() == "1"),
+                ColumnKey = row["IsPK"].ToString() == "1" ? "PRI" : "",
                 Description = HttpUtility.HtmlEncode(row["Description"].ToString())
             }).ToList();
         }

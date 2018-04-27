@@ -261,8 +261,6 @@ __pycache__/
 *.pyc
 CodeTool/Controllers/TestController.cs
 CodeTool/Views/Test/FormSubmit.cshtml
-CodeTool/Views/Test/FormSubmit.cshtml
-CodeTool/Controllers/TestController.cs
 *.csv
 *.mp3
 CodeTool/Views/Test/LakalaConfirm.cshtml
@@ -270,3 +268,7 @@ CodeTool/Views/Test/LakalaRefund.cshtml
 CodeTool/Views/Tool/Worm.cshtml
 *.zip
 CodeTool/Views/Test/BizStatement.cshtml
+CodeTool/App_Start/BundleConfig.cs
+CodeTool/App_Start/FilterConfig.cs
+CodeTool/App_Start/RouteConfig.cs
+CodeTool/App_Start/WebApiConfig.cs

@@ -29,6 +29,8 @@
                     <label for="cboSqlServer">Sql Server</label>
                     <input type="radio" name="dbType" id="cboMySql" value="MySql" />
                     <label for="cboMySql">MySql</label>
+                    <input type="radio" name="dbType" id="cboPostgreSql" value="PostgreSql" />
+                    <label for="cboPostgreSql">PostgreSql</label>
                 </td>
             </tr>
             <tr>
@@ -120,11 +122,11 @@
         setTimeout(function () {
             var text = clipboardData.getData("text");
             if (text) {
-                text = text + "\r\n本篇文章来源于 www.地址.COM 原文链接：" + location.href;
+                text = text + "\r\n本篇文章来源于 codetool 原文链接：" + location.href;
                 clipboardData.setData("text", text);
             }
         }, 100)
-    }  
+    }
 
     $("#btnGenerat").bind("click", function () {
         var connectionString = $("#txtConnectionString").val();
@@ -162,14 +164,21 @@
 
     $("input:radio").bind("change", function () {
         var connectionString = $("#txtConnectionString").val();
+        var sqlserver = "data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;";
+        var mysql = "data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;port=xxxx;";
+        var postgresql = "server=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;port=xxxx;";
 
         if (this.value == 'SqlServer') {
-            if (connectionString.indexOf("port=") > 0) {
-                $("#txtConnectionString").val(connectionString.replaceAll("port=xxxx", ""));
+            if ($("#txtConnectionString").val() == postgresql || $("#txtConnectionString").val() == mysql || $("#txtConnectionString").val() == "") {
+                $("#txtConnectionString").val(sqlserver);
             }
-        } else {
-            if (connectionString.indexOf("port=") < 0) {
-                $("#txtConnectionString").val(connectionString + "port=xxxx");
+        } else if (this.value == 'PostgreSql') {
+            if ($("#txtConnectionString").val() == sqlserver || $("#txtConnectionString").val() == mysql || $("#txtConnectionString").val() == "") {
+                $("#txtConnectionString").val(postgresql);
+            }
+        } else if (this.value == 'MySql') {
+            if ($("#txtConnectionString").val() == sqlserver || $("#txtConnectionString").val() == postgresql || $("#txtConnectionString").val() == "") {
+                $("#txtConnectionString").val(mysql);
             }
         }
     });
