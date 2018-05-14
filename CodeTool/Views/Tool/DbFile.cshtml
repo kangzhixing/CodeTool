@@ -1,0 +1,209 @@
+﻿@{
+    Layout = "~/Views/Shared/MasterPage.cshtml";
+    ViewBag.Title = "数据库文档";
+}
+<style type="text/css">
+    .divTableList {
+        max-width: 180px;
+        width: 20%;
+        height: 30px;
+        line-height: 30px;
+        margin: 10px 30px 0 30px;
+        background: #dddddd;
+        display: inline-block;
+        transition: 0.2s;
+        text-align: center;
+        cursor: pointer;
+        word-break: break-all;
+        word-wrap: break-word;
+    }
+
+        .divTableList:hover {
+            background: #dddddd;
+            box-shadow: 0 0 5px blue;
+        }
+
+    .divContent {
+        box-shadow: 0 0 10px grey;
+        padding: 20px;
+    }
+
+    .dbName {
+        font-weight: bold;
+        margin: 20px 0 10px 5px;
+    }
+
+    .tbDatas thead {
+        font-weight: bold;
+        background-color: darkgray;
+    }
+
+    .tbDatas tbody {
+        background-color: lightgray;
+    }
+
+    #tbDatas tbody tr:hover {
+        background-color: darkgray;
+    }
+
+    .tbDatas td {
+        padding: 5px;
+        white-space: nowrap;
+    }
+</style>
+<div id="pageMSSQL" class="divPage">
+    <div class="divTitleText"></div>
+    <div class="divCondition">
+        <div>
+            <button id="btnSearch" class="jk-button mr10">查询</button>
+        </div>
+        <table style="margin-top: 10px;width:100%">
+            <tr>
+                <td width="90px">数据库类型: </td>
+                <td>
+                    <input type="radio" name="dbType" id="cboSqlServer" checked="checked" value="SqlServer" />
+                    <label for="cboSqlServer">Sql Server</label>
+                    <input type="radio" name="dbType" id="cboMySql" value="MySql" />
+                    <label for="cboMySql">MySql</label>
+                    <input type="radio" name="dbType" id="cboPostgreSql" value="PostgreSql" />
+                    <label for="cboPostgreSql">PostgreSql</label>
+                </td>
+            </tr>
+            <tr>
+                <td>连接字符串: </td>
+                <td>
+                    <input type="text" id="txtConnectionString" style="max-width: 686px;width: 100%" value="data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="divDatas" class="divContent eleHide" style="display: none;overflow-x:auto">
+    </div>
+    <div id="divTableNameListTemp" class="dn"><div class="divTableList rd5" onclick="findTable('{1}');" title="{2}">{0}</div></div>
+    <div id="divTableTemp" class="dn">
+        <div class="dbName"></div>
+        <table class="tbTemp tbDatas">
+            <thead>
+                <tr>
+                    <td>名称</td>
+                    <td>类型</td>
+                    <td>长度</td>
+                    <td>是否为Null</td>
+                    <td>是否为主键</td>
+                    <td>是否自增</td>
+                    <td>说明</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <form method="post" id="fmExport" style="display: none" action="/Tool/Export2File">
+        <input name="sql" />
+        <input name="Connection" />
+        <input name="fileName" />
+        <input name="DbType" />
+        <input name="excelType" />
+    </form>
+</div>
+<script type="text/javascript">
+
+    function findTable(id) {
+        //location.href = '#' + id;
+        $('html, body').animate({
+            scrollTop: $("#" + id).offset().top - 80
+        }, 500);
+    }
+
+    $("#btnSearch").bind("click", function () {
+        var connectionString = $("#txtConnectionString").val();
+
+        $("#divDatas").html('');
+        $(".eleHide").hide();
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: "/Tool/GetDbFile",
+            cache: false,
+            timeout: 60 * 60 * 1000,
+            dataType: "json",
+            data: {
+                connection: encodeURIComponent(connectionString),
+                DbType: $("input[name=dbType]:radio[checked=checked]").val()
+            },
+            success: function (result) {
+                if (result != null && result.Message != null) {
+                    alert(result.Message);
+                    $(".eleHide").hide();
+                }
+                else {
+                    $(".eleHide").fadeIn(200);
+                    $("#divDatas").scrollLeft(0);
+
+                    var divTableListHtml = "";
+                    var divTableFilesHtml = "";
+                    for (var i = 0; i < result.length; i++) {
+                        var idStr = "divTableName_" + result[i].databaseName;
+                        var showName = result[i].databaseName.length > 25 ? result[i].databaseName.substring(0, 22) + "..." : result[i].databaseName;
+                        $("#divTableTemp").find(".dbName").attr("id", idStr).text(result[i].databaseName);
+                        var tbListHtml = $("#divTableNameListTemp").html();
+                        divTableListHtml += tbListHtml.replace("{0}", showName).replace("{1}", idStr).replace("{2}", result[i].databaseName);
+
+                        var tdHtml = '';
+                        for (var j = 0; j < result[i].fieldDescriptions.length; j++) {
+                            var field = result[i].fieldDescriptions;
+                            tdHtml += "<tr><td>" + field[j].Name + "</td>"
+                                + "<td>" + field[j].DbType + "</td>"
+                                + "<td>" + field[j].Length + "</td>"
+                                + "<td>" + (field[j].IsNullable ? "是" : "否") + "</td>"
+                                + "<td>" + (field[j].ColumnKey == "PRI" ? "是" : "否") + "</td>"
+                                + "<td>" + (field[j].IsIdentity ? "是" : "否") + "</td>"
+                                + "<td>" + field[j].Description + "</td>"
+                                + "</tr>";
+                        }
+                        $("#divTableTemp tbody").html(tdHtml);
+                        divTableFilesHtml += $("#divTableTemp").html();
+
+                    }
+                    $("#divDatas").append(divTableListHtml + divTableFilesHtml);
+
+                }
+            }
+        });
+
+    });
+
+    $("#btnExport").bind("click", function () {
+        var connectionString = $("#txtConnectionString").val();
+        var sql = $("#txtSql").text();
+        var fileName = $("#txtFileName").val();
+        if (sql.trim() == '') return;
+        $("#fmExport").find("input[name=Connection]").val(encodeURIComponent(connectionString));
+        $("#fmExport").find("input[name=fileName]").val(encodeURIComponent(fileName));
+        $("#fmExport").find("input[name=DbType]").val($("input[name=dbType]:radio[checked=checked]").val());
+        $("#fmExport").find("input[name=excelType]").val($("input[name=excelType]:radio[checked=checked]").val());
+        $("#fmExport").find("input[name=sql]").val(encodeURIComponent(sql));
+        $("#fmExport").submit();
+    });
+
+    $("input:radio").bind("change", function () {
+        var connectionString = $("#txtConnectionString").val();
+        var sqlserver = "data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;";
+        var mysql = "data source=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;port=xxxx;";
+        var postgresql = "server=xxxxxxxxxx;database=xxxxxxxxxx;uid=xxxxxxxxxx;pwd=xxxxxxxxxx;port=xxxx;";
+
+        if (this.value == 'SqlServer') {
+            if ($("#txtConnectionString").val() == postgresql || $("#txtConnectionString").val() == mysql || $("#txtConnectionString").val() == "") {
+                $("#txtConnectionString").val(sqlserver);
+            }
+        } else if (this.value == 'PostgreSql') {
+            if ($("#txtConnectionString").val() == sqlserver || $("#txtConnectionString").val() == mysql || $("#txtConnectionString").val() == "") {
+                $("#txtConnectionString").val(postgresql);
+            }
+        } else if (this.value == 'MySql') {
+            if ($("#txtConnectionString").val() == sqlserver || $("#txtConnectionString").val() == postgresql || $("#txtConnectionString").val() == "") {
+                $("#txtConnectionString").val(mysql);
+            }
+        }
+    });
+
+</script>

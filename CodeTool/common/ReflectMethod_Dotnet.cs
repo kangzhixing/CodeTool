@@ -26,7 +26,7 @@ namespace {0}
         /// <summary>
         /// " + (string.IsNullOrWhiteSpace(f.Description) ? f.Name : f.Description.Replace("\n", "  ")) + @"
         /// </summary>
-        public " + JlDbTypeMap.Map(f.DbType, f.IsNullable) + " " + f.Name + " { get; set; }");
+        public " + JlDbTypeMap.Map4CSharp(f.DbType, f.IsNullable) + " " + f.Name + " { get; set; }");
             });
             result.AppendLine(@"
     }
@@ -243,7 +243,7 @@ namespace {0}
             var i = JlDatabase.ExecuteNonQuery(connectionString, sql, parameters.ToArray());
 		
             return i > 0;
-        }}", JlDbTypeMap.Map(f.DbType),
+        }}", JlDbTypeMap.Map4CSharp(f.DbType),
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
@@ -271,10 +271,10 @@ namespace {0}
             inModel.FieldDescriptions.ForEach(ff =>
             {
                 field.AppendLine("                [" + ff.Name + "],");
-                if (JlDbTypeMap.Map(ff.DbType) == "string")
+                if (JlDbTypeMap.Map4CSharp(ff.DbType) == "string")
                     fieldSetModel.AppendLine(string.Format("                    {0} = row[\"{0}\"].ToString(),", ff.Name, JlString.ToLowerFirst(className)));
                 else
-                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", ff.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(ff.DbType))));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", ff.Name, JlString.ToUpperFirst(JlDbTypeMap.Map4CSharp(ff.DbType))));
             });
             inModel.FieldDescriptions.ForEach(f =>
             {
@@ -341,10 +341,10 @@ namespace {0}
             inModel.FieldDescriptions.ForEach(f =>
             {
                 field.AppendLine("            [" + f.Name + "],");
-                if (JlDbTypeMap.Map(f.DbType) == "string")
+                if (JlDbTypeMap.Map4CSharp(f.DbType) == "string")
                     fieldSetModel.AppendLine(string.Format("                    {0} = row[\"{0}\"].ToString(),", f.Name, JlString.ToLowerFirst(className)));
                 else
-                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(f.DbType))));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map4CSharp(f.DbType))));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
@@ -429,10 +429,10 @@ namespace {0}
             inModel.FieldDescriptions.ForEach(f =>
             {
                 field.AppendLine("                [" + f.Name + "],");
-                if (JlDbTypeMap.Map(f.DbType) == "string")
+                if (JlDbTypeMap.Map4CSharp(f.DbType) == "string")
                     fieldSetModel.AppendLine(string.Format("                    {0} = row[\"{0}\"].ToString(),", f.Name, JlString.ToLowerFirst(className)));
                 else
-                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map(f.DbType))));
+                    fieldSetModel.AppendLine(string.Format("                    {0} = JlConvert.TryTo{1}(row[\"{0}\"]),", f.Name, JlString.ToUpperFirst(JlDbTypeMap.Map4CSharp(f.DbType))));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>

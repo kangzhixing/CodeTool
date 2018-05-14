@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using CodeTool.common;
+using JasonLib.Data;
 
 namespace CodeTool.Models.CoderMaker
 {
@@ -18,5 +19,10 @@ namespace CodeTool.Models.CoderMaker
         /// 字段列表
         /// </summary>
         public List<JlFieldDescription> FieldDescriptions { get; set; }
+
+        /// <summary>
+        /// 数据库类型
+        /// </summary>
+        public JlDatabaseType databaseType { get; set; }
     }
 }

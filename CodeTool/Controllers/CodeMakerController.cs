@@ -59,12 +59,22 @@ namespace CodeTool.Controllers
                 inModel.Table = HttpUtility.UrlDecode(inModel.Table);
                 inModel.DbType = HttpUtility.UrlDecode(inModel.DbType);
 
+                JlDatabaseType databaseType;
+                switch (inModel.DbType.ToLower())
+                {
+                    case "mysql": databaseType = JlDatabaseType.MySql; break;
+                    case "postgresql": databaseType = JlDatabaseType.PostgreSql; break;
+                    case "sqlserver": databaseType = JlDatabaseType.SqlServer; break;
+                    default: databaseType = JlDatabaseType.MySql; break;
+                }
+
                 var databaseColumns = CommonMethod.GetDatabaseColumns(inModel.ConnectionString, inModel.Table, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), inModel.DbType));
 
                 var outModel = new CodeMakerGeneratCodeOut
                 {
                     CodeMakerGeneratCodeIn = inModel,
-                    FieldDescriptions = databaseColumns
+                    FieldDescriptions = databaseColumns,
+                    databaseType = databaseType
                 };
 
                 #region 通过反射调用方法
@@ -103,6 +113,14 @@ namespace CodeTool.Controllers
             inModel.Package = HttpUtility.UrlDecode(inModel.Package);
             inModel.DbType = HttpUtility.UrlDecode(inModel.DbType);
             inModel.Extension = HttpUtility.UrlDecode(inModel.Extension);
+            JlDatabaseType databaseType;
+            switch (inModel.DbType.ToLower())
+            {
+                case "mysql": databaseType = JlDatabaseType.MySql; break;
+                case "postgresql": databaseType = JlDatabaseType.PostgreSql; break;
+                case "sqlserver": databaseType = JlDatabaseType.SqlServer; break;
+                default: databaseType = JlDatabaseType.MySql; break;
+            }
 
             var databaseTables = CommonMethod.GetDatabaseTables(inModel.ConnectionString, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), inModel.DbType));
 
@@ -127,7 +145,8 @@ namespace CodeTool.Controllers
                 var outModel = new CodeMakerGeneratCodeOut
                 {
                     CodeMakerGeneratCodeIn = inModel,
-                    FieldDescriptions = databaseColumns
+                    FieldDescriptions = databaseColumns,
+                    databaseType = databaseType
                 };
                 #region 通过反射调用方法
                 var type = Type.GetType(JlConfig.GetValue<string>("ReflectClass") + "_" + inModel.Lang);

@@ -1,9 +1,12 @@
 ﻿using CodeTool.common;
+using CodeTool.Models.CoderMaker;
+using CodeTool.Models.Tool;
 using JasonLib;
 using JasonLib.Data;
 using JasonLib.Web;
 using JasonLib.Web.Mvc;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
@@ -114,6 +117,29 @@ namespace CodeTool.Controllers
         public ActionResult Export()
         {
             return View();
+        }
+
+        [ViewPage]
+        [Description("数据库文档")]
+        public ActionResult DbFile()
+        {
+            return View();
+        }
+
+        public ActionResult GetDbFile(string connection, string dbType)
+        {
+            connection = HttpUtility.UrlDecode(connection);
+            var result = new List<ToolGetDbFileOut>();
+            var databaseTables = CommonMethod.GetDatabaseTables(connection, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), dbType));
+            databaseTables.ForEach(dbTableName =>
+            {
+                result.Add(new ToolGetDbFileOut(dbTableName, CommonMethod.GetDatabaseColumns(connection, dbTableName, (JlDatabaseType)Enum.Parse(typeof(JlDatabaseType), dbType))));
+            });
+
+            return new JlJsonResult()
+            {
+                Content = JlJson.ToJson(result)
+            };
         }
 
         public ActionResult GetDatas(string connection, string sql, string dbType)

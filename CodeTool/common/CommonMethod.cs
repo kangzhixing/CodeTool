@@ -176,13 +176,23 @@ namespace CodeTool.common
 
         private static List<string> GetDatabaseTables_PostgreSql(string connectionString)
         {
+            return GetDatabaseTableDic_PostgreSql(connectionString).Keys.ToList();
+        }
+
+        private static Dictionary<string, string> GetDatabaseTableDic_PostgreSql(string connectionString)
+        {
+            var result = new Dictionary<string, string>();
+
             var sql = @"select relname as Name,cast(obj_description(relfilenode,'pg_class') as varchar) as comment from pg_class c 
 where  relkind = 'r' and relname not like 'pg_%' and relname not like 'sql_%' order by relname";
 
             var ds = new DataSet();
             JlDatabase.Fill(connectionString, sql, ds, null, JlDatabaseType.PostgreSql);
-
-            return ds.Tables[0].AsEnumerable().Select(row => row["Name"].ToString()).ToList();
+            ds.Tables[0].AsEnumerable().ForEach(row =>
+            {
+                result.Add(row["Name"].ToString(), row["comment"].ToString());
+            });
+            return result;
         }
 
         private static List<JlFieldDescription> GetDatabaseColumns_SqlServer(string connectionString, string tableName)
@@ -254,7 +264,7 @@ FROM sys.columns C
 
             return dataTable.AsEnumerable().Select(row => new JlFieldDescription()
             {
-                Name = row["Name"].ToString(),
+                Name = JlString.ReplaceUnderline(row["Name"].ToString()),
                 DbType = row["DbType"].ToString(),
                 Length = JlConvert.TryToInt(row["Length"]),
                 IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString()),
@@ -277,7 +287,7 @@ FROM sys.columns C
 
             return dataTable.AsEnumerable().Select(row => new JlFieldDescription()
             {
-                Name = row["Name"].ToString(),
+                Name = JlString.ReplaceUnderline(row["Name"].ToString()),
                 DbType = row["DbType"].ToString(),
                 Length = JlConvert.TryToInt(row["Length"]),
                 IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString().ToLower() == "yes"),
@@ -318,7 +328,7 @@ where table_schema='public' and table_name='{0}' order by ordinal_position asc";
 
             return ds.Tables[0].AsEnumerable().Select(row => new JlFieldDescription()
             {
-                Name = row["Name"].ToString(),
+                Name = JlString.ReplaceUnderline(row["Name"].ToString()),
                 DbType = row["DbType"].ToString(),
                 Length = JlConvert.TryToInt(row["Length"]),
                 IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString() == "1"),

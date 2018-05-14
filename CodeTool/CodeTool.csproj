@@ -184,6 +184,7 @@
     <Compile Include="Models\Index\IndexSearchPagesIn.cs" />
     <Compile Include="Models\Index\IndexSearchPagesOut.cs" />
     <Compile Include="Models\Index\IndexSearchByNameIn.cs" />
+    <Compile Include="Models\Tool\ToolGetDbFileOut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +309,7 @@
     <Content Include="Views\Test\BizStatement.cshtml" />
     <Content Include="Views\Test\FormSubmit.cshtml" />
     <Content Include="Views\Tool\Vote.cshtml" />
+    <Content Include="Views\Tool\DbFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

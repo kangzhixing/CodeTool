@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using CodeTool.Models.CoderMaker;
+using JasonLib.Data;
 
 namespace CodeTool.common
 {
@@ -28,7 +29,7 @@ public class {1} {{
             {
                 if (!string.IsNullOrEmpty(f.Description))
                     result.AppendLine("    //" + f.Description.Replace("\n", "  "));
-                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable) + " " + JlString.ToLowerFirst(f.Name) + @";
+                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable, inModel.databaseType) + " " + JlString.ToLowerFirst(f.Name) + @";
 ");
 
                 getterAndSetter.AppendLine(string.Format(@"    public {2} get{1}() {{
@@ -37,11 +38,23 @@ public class {1} {{
     public void set{1}({2} {0}) {{
         this.{0} = {0};
     }}
-", JlString.ToLowerFirst(f.Name), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable)));
+", JlString.ToLowerFirst(f.Name), JlString.ToUpperFirst(f.Name), JlDbTypeMap.Map4J(f.DbType, f.IsNullable, inModel.databaseType)));
 
             }
             result.Append(getterAndSetter);
             result.AppendLine("}");
+
+            return result.ToString();
+        }
+
+        public string RefCloneObject(CodeMakerGeneratCodeOut inModel)
+        {
+            var result = new StringBuilder();
+
+            foreach (var f in inModel.FieldDescriptions)
+            {
+                result.AppendLine(string.Format(@"model.set{0}(vo.get{0}());", JlString.ToUpperFirst(f.Name)));
+            }
 
             return result.ToString();
         }
@@ -160,7 +173,7 @@ public interface {2}Mapper{{
             string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
             className,
             JlString.ToUpperFirst(field.Name),
-            JlDbTypeMap.Map4J(field.DbType),
+            JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType),
             JlString.ToLowerFirst(field.Name),
             JlString.ToLowerFirst(className),
             inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI") ? className + " select" : "List<" + className + "> selectList"));
@@ -228,7 +241,7 @@ public interface {2}Mapper{{
             {
                 field.AppendLine("            + \"[" + f.Name + "], \"");
                 fieldValue.AppendLine("            + \"@" + f.Name + ", \"");
-                if (JlDbTypeMap.Map4J(f.DbType) == "Date")
+                if (JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date")
                     fieldParameter.AppendLine(string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.get{0}().getTime()));", f.Name, JlString.ToLowerFirst(className)));
                 else
                     fieldParameter.AppendLine(string.Format("        parameters.put(\"{0}\", {1}.get{0}());", f.Name, JlString.ToLowerFirst(className)));
@@ -276,7 +289,7 @@ public interface {2}Mapper{{
                     {
                         field.AppendLine("            + \"[" + ff.Name + "] = @" + ff.Name + ", \"");
                     }
-                    fieldParameter.AppendLine(JlDbTypeMap.Map4J(ff.DbType) == "Date"
+                    fieldParameter.AppendLine(JlDbTypeMap.Map4J(ff.DbType, false, inModel.databaseType) == "Date"
                         ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.get{0}().getTime()));", ff.Name, JlString.ToLowerFirst(className))
                         : string.Format("        parameters.put(\"{0}\", {1}.get{0}());", ff.Name, JlString.ToLowerFirst(className)));
                 });
@@ -342,12 +355,12 @@ public interface {2}Mapper{{
         int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
-    }}", JlDbTypeMap.Map4J(f.DbType),
+    }}", JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType),
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
                 JlString.ToUpperFirst(f.Name),
-                JlDbTypeMap.Map4J(f.DbType) == "Date"
+                JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date"
                         ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}));", f.Name, JlString.ToLowerFirst(f.Name))
                         : string.Format("        parameters.put(\"{0}\", {1});", f.Name, JlString.ToLowerFirst(f.Name))));
             });
@@ -364,14 +377,14 @@ public interface {2}Mapper{{
             inModel.FieldDescriptions.ForEach(f =>
             {
                 field.AppendLine("            + \"[" + f.Name + "], \"");
-                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
-                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date"
+                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType)) + "(\"" + f.Name + "\"));"));
             });
             inModel.FieldDescriptions.ForEach(f =>
             {
                 var fieldParameter = new StringBuilder();
-                fieldParameter.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
+                fieldParameter.AppendLine(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date"
                     ? string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.getTime()));", f.Name, JlString.ToLowerFirst(f.Name))
                     : string.Format("        parameters.put(\"{0}\", {1});", f.Name, JlString.ToLowerFirst(f.Name)));
 
@@ -409,7 +422,7 @@ public interface {2}Mapper{{
                 JlString.ToLowerFirst(className),
                 fieldSetModel,
                 JlString.ToLowerFirst(f.Name),
-                JlDbTypeMap.Map4J(f.DbType),
+                JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType),
                 JlString.ToUpperFirst(f.Name)));
             });
 
@@ -428,9 +441,9 @@ public interface {2}Mapper{{
             inModel.FieldDescriptions.ForEach(f =>
             {
                 field.AppendLine("            \"[" + f.Name + "], \" +");
-                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
-                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date"
+                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType)) + "(\"" + f.Name + "\"));"));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
@@ -472,7 +485,7 @@ public interface {2}Mapper{{
 
             inModel.FieldDescriptions.ForEach(f =>
             {
-                var fieldParameter = JlDbTypeMap.Map4J(f.DbType) == "Date"
+                var fieldParameter = JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date"
                     ? string.Format("        parameters.put(\"{0}\", new java.sql.Date(wherePart.get{1}().getTime()));", f.Name, JlString.ToUpperFirst(f.Name))
                     : string.Format("        parameters.put(\"{0}\", wherePart.get{1}());", f.Name, JlString.ToUpperFirst(f.Name));
 
@@ -512,9 +525,9 @@ public interface {2}Mapper{{
             inModel.FieldDescriptions.ForEach(f =>
             {
                 field.AppendLine("                \"[" + f.Name + "], \" +");
-                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType) == "Date"
-                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\").getTime()));")
-                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType)) + "(\"" + f.Name + "\"));"));
+                fieldSetModel.AppendLine(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date"
+                    ? string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(new Date(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType)) + "(\"" + f.Name + "\").getTime()));")
+                    : string.Format("            model.set" + JlString.ToUpperFirst(f.Name) + "(crs.get" + JlString.ToUpperFirst(JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType)) + "(\"" + f.Name + "\"));"));
             });
 
             Func<string, string, string> getSelectSql = (data, where) =>
@@ -599,7 +612,7 @@ public interface {2}Mapper{{
     select
     <include refid=""Base_Column_List"" />
     from {0}
-  </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name,
+  </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name,
   inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI")?"select": "selectList"));
             }
             return result.ToString();
@@ -717,7 +730,7 @@ public interface {2}Mapper{{
 @"  <delete id=""deleteBy{1}"" parameterType=""{4}"">
     delete from {0}
     where {5} = #{{{2},jdbcType={3}}}
-  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType), field.Name));
+  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name));
 
             return result.ToString();
         }
