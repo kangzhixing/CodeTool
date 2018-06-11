@@ -23,12 +23,15 @@ import java.util.*;
 import java.math.*;
 
 public class {1} {{
-", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), inModel.CodeMakerGeneratCodeIn.ClassName));
+", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), JlString.ToUpperFirst(JlString.ReplaceUnderline(inModel.CodeMakerGeneratCodeIn.ClassNameResult))));
 
             foreach (var f in inModel.FieldDescriptions)
             {
                 if (!string.IsNullOrEmpty(f.Description))
-                    result.AppendLine("    //" + f.Description.Replace("\n", "  "));
+                    result.AppendLine(
+@"    /**
+     * " + f.Description.Replace("\n", "  ") + @"
+     */");
                 result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable, inModel.databaseType) + " " + JlString.ToLowerFirst(f.Name) + @";
 ");
 
@@ -79,7 +82,7 @@ public class {1}Dao{{
 {3}
 
 
-}}", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao"), inModel.CodeMakerGeneratCodeIn.ClassName, string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), content));
+}}", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao"), JlString.ToUpperFirst(JlString.ReplaceUnderline(inModel.CodeMakerGeneratCodeIn.ClassNameResult)), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "entity"), content));
 
             return result.ToString();
         }
@@ -613,7 +616,7 @@ public interface {2}Mapper{{
     <include refid=""Base_Column_List"" />
     from {0}
   </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name,
-  inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI")?"select": "selectList"));
+  inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI") ? "select" : "selectList"));
             }
             return result.ToString();
         }

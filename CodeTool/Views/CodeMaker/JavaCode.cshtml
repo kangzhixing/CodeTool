@@ -187,8 +187,15 @@
         SelectText($(this));
     });
 
+    function GetClassName(str) {
+        if (str != null && str.length > 2 && str.substring(0, 2) == 't_') {
+            str = str.substring(2);
+        }
+        return str.replaceUnderline().toUpperFirst();
+    }
+
     $("#sltTables").bind("change", function () {
-        $("#txtClassName").val($(this).find("option:selected").val());
+        $("#txtClassName").val(GetClassName($(this).find("option:selected").val()));
     });
 
     $("#btnConnect").bind("click", function () {
@@ -223,7 +230,7 @@
                         for (var i = 0; i < result.length; i++) {
                             html = html + "<option value='" + result[i] + "'>" + result[i] + "</option>";
                         }
-                        $("#txtClassName").val(result[0]);
+                        $("#txtClassName").val(GetClassName(result[0]));
                     }
                     tables.html(html);
                 }

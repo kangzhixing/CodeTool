@@ -29,6 +29,18 @@ namespace CodeTool.Models.CoderMaker
         public string ClassName { get; set; }
 
         /// <summary>
+        /// 类名
+        /// </summary>
+        public string ClassNameResult
+        {
+            get
+            {
+                return ClassName.StartsWith("t_") ? ClassName.Substring(2) : ClassName;
+            }
+            set { }
+        }
+
+        /// <summary>
         /// 类型
         /// </summary>
         public string Type { get; set; }
