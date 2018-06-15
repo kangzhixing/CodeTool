@@ -56,7 +56,7 @@ public class {1} {{
 
             foreach (var f in inModel.FieldDescriptions)
             {
-                result.AppendLine(string.Format(@"model.set{0}(vo.get{0}());", JlString.ToUpperFirst(f.Name)));
+                result.AppendLine(string.Format(@"model.set{0}(vo.get{0}());", JlString.ToUpperFirst(JlString.ReplaceUnderline(f.Name))));
             }
 
             return result.ToString();
@@ -173,7 +173,7 @@ public interface {2}Mapper{{
     
 }}",
             string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao"),
-            string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
+            string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model.") + className,
             className,
             JlString.ToUpperFirst(field.Name),
             JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType),
@@ -197,11 +197,11 @@ public interface {2}Mapper{{
             var codeStr = new StringBuilder();
             codeStr.AppendLine(
 @"<!DOCTYPE mapper PUBLIC "" -//mybatis.org//DTD Mapper 3.0//EN"" ""http://mybatis.org/dtd/mybatis-3-mapper.dtd"">
-<mapper namespace=""" + string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao.") + className + "Mapper\">");
+<mapper namespace=""" + string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao.")+"I"+JlString.ToUpperFirst(className) + "Dao\">");
 
             inModel.FieldDescriptions.ToList().ForEach(f =>
             {
-                field_Basic.AppendLine(string.Format("    <{0} column=\"" + JlString.ToUpperFirst(f.Name) + "\" jdbcType=\"" + JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper() + "\" property=\"" + JlString.ToLowerFirst(f.Name) + "\" />",
+                field_Basic.AppendLine(string.Format("    <{0} column=\"" + f.Name + "\" property=\"" + JlString.ToLowerFirst(JlString.ReplaceUnderline(f.Name)) + "\" jdbcType=\"" + JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper() + "\" />",
                     f.ColumnKey == "PRI" ? "id" : "result"));
 
                 if (fieldParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
@@ -222,7 +222,7 @@ public interface {2}Mapper{{
   <sql id=""Base_Column_List"">
     {2}
   </sql>
-{3}</mapper>", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className, field_Basic, fieldParams.ToString().Substring(0, fieldParams.Length - 2), field_SqlContent));
+{3}</mapper>", string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model.") + className, field_Basic, fieldParams.ToString().Substring(0, fieldParams.Length - 2), field_SqlContent));
 
             return codeStr.ToString();
         }
@@ -615,7 +615,7 @@ public interface {2}Mapper{{
     select
     <include refid=""Base_Column_List"" />
     from {0}
-  </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name,
+  </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(JlString.ReplaceUnderline(field.Name)), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name,
   inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI") ? "select" : "selectList"));
             }
             return result.ToString();
@@ -635,7 +635,7 @@ public interface {2}Mapper{{
             }
             inModel.FieldDescriptions.Where(f => f.ColumnKey != "PRI").ToList().ForEach(f =>
             {
-                field_UpdateParams.Append(string.Format("{2} = #{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper(), f.Name));
+                field_UpdateParams.Append(string.Format("{2} = #{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(JlString.ReplaceUnderline(f.Name)), JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper(), f.Name));
                 if (field_UpdateParams.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
                 {
                     field_UpdateParams.Append("\r\n        ");
@@ -644,7 +644,7 @@ public interface {2}Mapper{{
                 field_UpdateParamsSelective.AppendLine(string.Format(
 @"      <if test=""{0} != null"">
         {1} = #{{{0},jdbcType={2}}},
-      </if>", JlString.ToLowerFirst(f.Name), f.Name, JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
+      </if>", JlString.ToLowerFirst(JlString.ReplaceUnderline(f.Name)), f.Name, JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper()));
             });
 
             var field = new JlFieldDescription();
@@ -668,8 +668,8 @@ public interface {2}Mapper{{
     <set>
 {5}    </set>
     where {1} = #{{{2},jdbcType={3}}}
-  </update>", tableName, field.Name, JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className,
-                field_UpdateParamsSelective, field_UpdateParams.ToString().TrimEnd().Substring(0, field_UpdateParams.ToString().TrimEnd().Length - 1), JlString.ToUpperFirst(field.Name)));
+  </update>", tableName, field.Name, JlString.ToLowerFirst(JlString.ReplaceUnderline(field.Name)), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model.") + className,
+                field_UpdateParamsSelective, field_UpdateParams.ToString().TrimEnd().Substring(0, field_UpdateParams.ToString().TrimEnd().Length - 1), JlString.ToUpperFirst(JlString.ReplaceUnderline(field.Name))));
             return result.ToString();
         }
 
@@ -697,7 +697,7 @@ public interface {2}Mapper{{
                 {
                     field_InsertParams.Append("\r\n    ");
                 }
-                field_InsertParams.Append(string.Format("#{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(f.Name), JlDbTypeMap.Map4Mybatis(f.DbType).ToUpper()));
+                field_InsertParams.Append(string.Format("#{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(JlString.ReplaceUnderline(f.Name)), JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper()));
             });
 
             result.AppendLine(string.Format(
@@ -706,7 +706,7 @@ public interface {2}Mapper{{
     {1}
     ) values (
     {2})
-  </insert>", tableName, field_Params.ToString().Substring(0, field_Params.Length - 2), field_InsertParams.ToString().TrimEnd().Substring(0, field_InsertParams.ToString().TrimEnd().Length - 1), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "bean.") + className));
+  </insert>", tableName, field_Params.ToString().Substring(0, field_Params.Length - 2), field_InsertParams.ToString().TrimEnd().Substring(0, field_InsertParams.ToString().TrimEnd().Length - 1), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model.") + className));
             return result.ToString();
         }
 
@@ -733,7 +733,7 @@ public interface {2}Mapper{{
 @"  <delete id=""deleteBy{1}"" parameterType=""{4}"">
     delete from {0}
     where {5} = #{{{2},jdbcType={3}}}
-  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.Name), JlDbTypeMap.Map4Mybatis(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name));
+  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(JlString.ReplaceUnderline(field.Name)), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name));
 
             return result.ToString();
         }

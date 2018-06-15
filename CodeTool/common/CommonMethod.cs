@@ -328,7 +328,7 @@ where table_schema='public' and table_name='{0}' order by ordinal_position asc";
 
             return ds.Tables[0].AsEnumerable().Select(row => new JlFieldDescription()
             {
-                Name = JlString.ReplaceUnderline(row["Name"].ToString()),
+                Name = row["Name"].ToString(),
                 DbType = row["DbType"].ToString(),
                 Length = JlConvert.TryToInt(row["Length"]),
                 IsNullable = JlConvert.TryToBool(row["IsNullable"].ToString() == "1"),
