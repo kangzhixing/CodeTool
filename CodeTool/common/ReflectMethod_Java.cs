@@ -32,7 +32,7 @@ public class {1} {{
 @"    /**
      * " + f.Description.Replace("\n", "  ") + @"
      */");
-                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, f.IsNullable, inModel.databaseType) + " " + JlString.ToLowerFirst(f.SimpleName) + @";
+                result.AppendLine(@"    private " + JlDbTypeMap.Map4J(f.DbType, true, inModel.databaseType) + " " + JlString.ToLowerFirst(f.SimpleName) + @";
 ");
 
                 getterAndSetter.AppendLine(string.Format(@"    public {2} get{1}() {{
@@ -41,7 +41,7 @@ public class {1} {{
     public void set{1}({2} {0}) {{
         this.{0} = {0};
     }}
-", JlString.ToLowerFirst(f.SimpleName), JlString.ToUpperFirst(f.SimpleName), JlDbTypeMap.Map4J(f.DbType, f.IsNullable, inModel.databaseType)));
+", JlString.ToLowerFirst(f.SimpleName), JlString.ToUpperFirst(f.SimpleName), JlDbTypeMap.Map4J(f.DbType, true, inModel.databaseType)));
 
             }
             result.Append(getterAndSetter);
@@ -181,10 +181,10 @@ public interface I{2}Dao{{
     
 }}",
             string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao"),
-            string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "."  + className,
+            string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className,
             className,
             JlString.ToUpperFirst(field.SimpleName),
-            JlDbTypeMap.Map4J(field.DbType, field.IsNullable, inModel.databaseType),
+            JlDbTypeMap.Map4J(field.DbType, true, inModel.databaseType),
             JlString.ToLowerFirst(field.SimpleName),
             JlString.ToLowerFirst(className),
             inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI") ? className + " select" : "List<" + className + "> selectList"));
@@ -218,13 +218,11 @@ public interface I{2}Dao{{
                     fieldParams.Append("\r\n    ");
                 }
                 fieldParams.Append(f.Name + ", ");
-                if (f.IsNullable)
-                {
-                    fieldWhereParams.AppendFormat(@"
+
+                fieldWhereParams.AppendFormat(@"
     <if test=""{0} != null"">
         AND {1} = #{{{0},jdbcType={2}}}
     </if>", f.SimpleName, f.Name, JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper());
-                }
             });
 
             field_SqlContent.Append(GenerateCode_Java.MybatisSelect(inModel));
@@ -263,7 +261,7 @@ public interface I{2}Dao{{
             {
                 field.AppendLine("            + \"[" + f.Name + "], \"");
                 fieldValue.AppendLine("            + \"@" + f.Name + ", \"");
-                if (JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType) == "Date")
+                if (JlDbTypeMap.Map4J(f.DbType, true, inModel.databaseType) == "Date")
                     fieldParameter.AppendLine(string.Format("        parameters.put(\"{0}\", new java.sql.Date({1}.get{0}().getTime()));", f.Name, JlString.ToLowerFirst(className)));
                 else
                     fieldParameter.AppendLine(string.Format("        parameters.put(\"{0}\", {1}.get{0}());", f.Name, JlString.ToLowerFirst(className)));
@@ -377,7 +375,7 @@ public interface I{2}Dao{{
         int i = SlDatabase.executeNonQuery(connectionString, sql, parameters);
 		
         return i > 0;
-    }}", JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType),
+    }}", JlDbTypeMap.Map4J(f.DbType, true, inModel.databaseType),
                 JlString.ToLowerFirst(f.Name),
                 tableName,
                 f.Name,
@@ -444,7 +442,7 @@ public interface I{2}Dao{{
                 JlString.ToLowerFirst(className),
                 fieldSetModel,
                 JlString.ToLowerFirst(f.Name),
-                JlDbTypeMap.Map4J(f.DbType, false, inModel.databaseType),
+                JlDbTypeMap.Map4J(f.DbType, true, inModel.databaseType),
                 JlString.ToUpperFirst(f.Name)));
             });
 
@@ -659,7 +657,7 @@ public interface I{2}Dao{{
         <include refid = ""Where_Column_List""></include>
     </trim>
   </select>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(),
-   JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name,
+   JlDbTypeMap.Map4J(field.DbType, true, inModel.databaseType), field.Name,
   inModel.FieldDescriptions.Any(f => f.ColumnKey == "PRI") ? "select" : "selectList",
   string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + inModel.CodeMakerGeneratCodeIn.ClassName));
             }
@@ -713,7 +711,7 @@ public interface I{2}Dao{{
     <set>
 {5}    </set>
     where {1} = #{{{2},jdbcType={3}}}
-  </update>", tableName, field.Name, JlString.ToLowerFirst(field.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "."  + className,
+  </update>", tableName, field.Name, JlString.ToLowerFirst(field.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className,
                 field_UpdateParamsSelective, field_UpdateParams.ToString().TrimEnd().Substring(0, field_UpdateParams.ToString().TrimEnd().Length - 1), JlString.ToUpperFirst(field.SimpleName)));
             return result.ToString();
         }
@@ -769,7 +767,7 @@ public interface I{2}Dao{{
                 tableName,
                 field_Params.ToString().Substring(0, field_Params.Length - 2),
                 field_InsertParams.ToString().TrimEnd().Substring(0, field_InsertParams.ToString().TrimEnd().Length - 1),
-                string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "."  + className));
+                string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className));
 
             result.AppendLine(string.Format(
 @"  <insert id=""insertSelective"" parameterType=""{3}"" useGeneratedKeys=""true"" keyProperty=""id"">
@@ -782,7 +780,7 @@ public interface I{2}Dao{{
                 tableName,
                 field_InsertSelectiveParams.ToString(),
                 field_InsertSelectiveValues.ToString(),
-                string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "."  + className));
+                string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className));
             return result.ToString();
         }
 
@@ -809,7 +807,7 @@ public interface I{2}Dao{{
 @"  <delete id=""deleteBy{1}"" parameterType=""{4}"">
     delete from {0}
     where {5} = #{{{2},jdbcType={3}}}
-  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, false, inModel.databaseType), field.Name));
+  </delete>", tableName, JlString.ToUpperFirst(field.Name), JlString.ToLowerFirst(field.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(field.DbType).ToUpper(), JlDbTypeMap.Map4J(field.DbType, true, inModel.databaseType), field.Name));
 
             return result.ToString();
         }
