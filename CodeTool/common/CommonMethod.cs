@@ -320,7 +320,7 @@ left join (
     left join pg_description pg_desc on pg_desc.objoid = pg_attr.attrelid and pg_desc.objsubid=pg_attr.attnum
     where pg_attr.attnum>0 and pg_attr.attrelid=pg_class.oid and pg_class.relname='{0}'
 )c on c.attname = information_schema.columns.column_name
-where table_schema='public' and table_name='{0}' order by ordinal_position asc";
+where table_schema='public' and table_name='{0}' order by ispk desc,isidentity desc,ordinal_position asc";
             sql = string.Format(sql, tableName);
 
             var ds = new DataSet();
