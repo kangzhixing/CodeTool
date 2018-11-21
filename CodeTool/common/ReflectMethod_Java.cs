@@ -165,7 +165,9 @@ public interface I{2}Dao{{
 
     List<{2}> selectByPage({2} {6});
 
-    List<{2}> selectByWhere({2} {6});
+    {2} selectByWhere({2} {6});
+
+    List<{2}> selectListByWhere({2} {6});
 
     int count({2} {6});
 
@@ -178,6 +180,8 @@ public interface I{2}Dao{{
     int insert({2} {6});
 
     int insertSelective({2} {6});
+
+    void batchInsert(List<{2}> {6}List);
     
 }}",
             string.Format(inModel.CodeMakerGeneratCodeIn.Package, "dao"),
@@ -649,6 +653,15 @@ public interface I{2}Dao{{
     <trim prefix=""where"" prefixOverrides=""and | or"">
         <include refid = ""Where_Column_List""></include>
     </trim>
+    LIMIT 1
+  </select>
+  <select id=""selectListByWhere"" parameterType=""{7}"" resultMap=""BaseResultMap"">
+    select
+    <include refid=""Base_Column_List"" />
+    from {0}
+    <trim prefix=""where"" prefixOverrides=""and | or"">
+        <include refid = ""Where_Column_List""></include>
+    </trim>
   </select>
   <select id=""count"" parameterType=""{7}"" resultType=""Integer"">
     select count(1)
@@ -780,6 +793,20 @@ public interface I{2}Dao{{
                 tableName,
                 field_InsertSelectiveParams.ToString(),
                 field_InsertSelectiveValues.ToString(),
+                string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className));
+
+            result.AppendLine(string.Format(
+@"  <insert id=""batchInsert"" parameterType=""java.util.List"">
+    insert into {0}(
+    {1}
+    ) values 
+      <foreach collection=""list"" item=""item"" index=""index"" separator="","">
+        ({2})
+      </foreach>
+  </insert>",
+                tableName,
+                field_Params.ToString(),
+                field_InsertParams.ToString().TrimEnd().Substring(0, field_InsertParams.ToString().TrimEnd().Length - 1).Trim(),
                 string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className));
             return result.ToString();
         }
