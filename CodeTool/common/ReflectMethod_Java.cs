@@ -736,6 +736,7 @@ public interface I{2}Dao{{
             var result = new StringBuilder();
             var field_Params = new StringBuilder();
             var field_InsertParams = new StringBuilder();
+            var field_InsertParams_Batch = new StringBuilder();
             var field_InsertSelectiveParams = new StringBuilder();
             var field_InsertSelectiveValues = new StringBuilder();
 
@@ -756,6 +757,13 @@ public interface I{2}Dao{{
                     field_InsertParams.Append("\r\n    ");
                 }
                 field_InsertParams.AppendLine(string.Format("    #{{{0},jdbcType={1}}}, ", JlString.ToLowerFirst(f.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper()));
+
+
+                if (field_InsertParams_Batch.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.None).Last().Length > 100)
+                {
+                    field_InsertParams_Batch.Append("\r\n    ");
+                }
+                field_InsertParams_Batch.AppendLine(string.Format("         #{{item.{0},jdbcType={1}}}, ", JlString.ToLowerFirst(f.SimpleName), JlDbTypeMap.Map4Mybatis_PostgreSql(f.DbType).ToUpper()));
 
                 field_InsertSelectiveParams.AppendFormat(
 @"      <if test=""{0} != null"">
@@ -805,8 +813,8 @@ public interface I{2}Dao{{
       </foreach>
   </insert>",
                 tableName,
-                field_Params.ToString(),
-                field_InsertParams.ToString().TrimEnd().Substring(0, field_InsertParams.ToString().TrimEnd().Length - 1).Trim(),
+                field_Params.ToString().Substring(0, field_Params.Length - 2),
+                field_InsertParams_Batch.ToString().TrimEnd().Substring(0, field_InsertParams_Batch.ToString().TrimEnd().Length - 1).Trim(),
                 string.Format(inModel.CodeMakerGeneratCodeIn.Package, "model") + "." + className));
             return result.ToString();
         }
